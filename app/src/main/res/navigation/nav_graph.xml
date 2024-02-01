@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.project.stockproject.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_stockInformFragment"
+            app:destination="@id/stockInformFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_homeFragment_to_majorIndexFragment"
+            app:destination="@id/majorIndexFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_homeFragment_to_customDialogFavorite"
+            app:destination="@id/customDialogFavorite"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/stockInformFragment"
+        android:name="com.project.stockproject.stockInform.StockInformFragment"
+        android:label="fragment_stock_inform"
+        tools:layout="@layout/fragment_stock_inform" >
+        <action
+            android:id="@+id/action_stockInformFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            />
+        <action
+            android:id="@+id/action_stockInformFragment_self"
+            app:destination="@id/stockInformFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"/>
+    </fragment>
+    <fragment
+        android:id="@+id/majorIndexFragment"
+        android:name="com.project.stockproject.home.MajorIndexFragment"
+        android:label="fragment_major_index"
+        tools:layout="@layout/fragment_major_index" />
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.project.stockproject.favorite.FavoriteFragment"
+        android:label="fragment_favorite"
+        tools:layout="@layout/fragment_favorite" />
+    <dialog
+        android:id="@+id/customDialogFavorite"
+        android:name="com.project.stockproject.favorite.CustomDialogFavorite"
+        android:label="CustomDialogFavorite" />
+</navigation>

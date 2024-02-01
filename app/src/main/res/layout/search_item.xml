@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    >
+
+    <ImageView
+        android:id="@+id/index"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/ic_baseline_search_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/stockName"
+        app:layout_constraintTop_toTopOf="@id/stockName"
+        app:layout_constraintBottom_toBottomOf="@+id/stockName"/>
+
+    <TextView
+        android:id="@+id/stockName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/index"
+        app:layout_constraintEnd_toStartOf="@+id/barrier"
+        android:textSize="15sp"
+        android:maxLines="1"
+        tools:text="삼성전자삼성전자"/>
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:barrierDirection="end"
+        />
+    <TextView
+        android:id="@+id/stockCode"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        tools:text="000000"
+        android:textSize="15sp"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintStart_toEndOf="@+id/barrier"
+        app:layout_constraintTop_toTopOf="@+id/stockName"
+        app:layout_constraintEnd_toStartOf="@+id/star"
+        app:layout_constraintBottom_toBottomOf="@+id/stockName"/>
+
+
+<ImageView
+    android:id="@+id/star"
+    android:src="@drawable/ic_baseline_star_border_24"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+
+    app:layout_goneMarginRight="5dp"
+    android:layout_marginStart="10dp"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:layout_marginEnd="15dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
