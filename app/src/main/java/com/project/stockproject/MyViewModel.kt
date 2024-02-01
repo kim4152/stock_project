@@ -1,15 +1,23 @@
 package com.project.stockproject
 
+import android.content.Context
+import android.util.Log
 import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.room.Room
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.project.stockproject.common.MyApplication
+import com.project.stockproject.favorite.FavoriteDialogAdapter
 import com.project.stockproject.home.MajorIndexViewPagerDTO
 import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.retrofit.RetrofitService
+import com.project.stockproject.room.FavoriteDB
+import com.project.stockproject.room.FolderDAO
+import com.project.stockproject.room.FolderTable
 import com.project.stockproject.search.HistoryManager
 import com.project.stockproject.search.Search
 import com.project.stockproject.search.SearchHistoryManager
@@ -32,7 +40,7 @@ class MyViewModel : ViewModel() {
     companion object {
         private const val SERVICE_KEY =
             "9mMQezrKc2Qs061fZUnuMUTboZG85RptSH7RdZUS4jCe7fKxxALDPO0oNePEjJ4TGV9hj6Bo7Ce6ylMhxUr1fw=="
-       lateinit var getSearchOnclick:Search
+        lateinit var getSearchOnclick: Search
     }
 
 
@@ -43,6 +51,7 @@ class MyViewModel : ViewModel() {
     fun getConnectivityLiveData() = connectivityLiveData
 
     val retrofit: RetrofitService = RetrofitFactory.retrofit.create(RetrofitService::class.java)
+
     //검색
     private var searchCall: Call<searchResponse>? = null
     fun search(s: String): MutableLiveData<List<StockItem>> {
@@ -77,6 +86,7 @@ class MyViewModel : ViewModel() {
 
         return liveData
     }
+
     class MajorstockIndex(
         private val mutableListOf: MutableList<String>,
         private val liveData: MutableLiveData<List<MajorIndexViewPagerDTO>>
@@ -104,7 +114,7 @@ class MyViewModel : ViewModel() {
             }
         }
 
-        private fun majorstockCrawling(name:String){
+        private fun majorstockCrawling(name: String) {
             val url = "https://finance.naver.com/sise/sise_index_day.nhn?code=$name&page=1"
             val source = URL(url).readText()
             val doc = Jsoup.parse(source)
@@ -142,33 +152,41 @@ class MyViewModel : ViewModel() {
 
 
     //검색 결과 클릭
-    fun setSearchOnclik(search: Search){
-        getSearchOnclick=search
+    fun setSearchOnclik(search: Search) {
+        getSearchOnclick = search
 
     }
 
     //종목정보 기본조회
-    val stockInformRetrofit : RetrofitService = RetrofitFactory.stockInfromRetrofit.create(RetrofitService::class.java)
-    lateinit var viewPager2 : ViewPager2
-    lateinit var searchHistorylist:List<HistoryManager>
+    val stockInformRetrofit: RetrofitService =
+        RetrofitFactory.stockInfromRetrofit.create(RetrofitService::class.java)
+    lateinit var viewPager2: ViewPager2
+    lateinit var searchHistorylist: List<HistoryManager>
+
     //lateinit var searchHistoryManager:SearchHistoryManager
-    fun stockInformRetrofit(searchHistorylist1: List<HistoryManager>,
-                            viewPager: ViewPager2,
-                            pagerAdapter: StockInformViewPagerAdapter)
-    {
-        viewPager2=viewPager
-        searchHistorylist=searchHistorylist1
-       // majorIndexViewPager(viewPager2)
+    fun stockInformRetrofit(
+        searchHistorylist1: List<HistoryManager>,
+        viewPager: ViewPager2,
+        pagerAdapter: StockInformViewPagerAdapter
+    ) {
+        viewPager2 = viewPager
+        searchHistorylist = searchHistorylist1
+        // majorIndexViewPager(viewPager2)
         runBlocking {
             searchHistorylist.forEachIndexed { index, historyManager ->
-                if (index==0) return@forEachIndexed
-                processStockInform(historyManager.stockCode, index,pagerAdapter)
+                if (index == 0) return@forEachIndexed
+                processStockInform(historyManager.stockCode, index, pagerAdapter)
 
             }
         }
     }
-    val getList:MutableList<StockOutput> = mutableListOf()
-    private fun processStockInform(stockCode: String, index: Int,pagerAdapter: StockInformViewPagerAdapter) {
+
+    val getList: MutableList<StockOutput> = mutableListOf()
+    private fun processStockInform(
+        stockCode: String,
+        index: Int,
+        pagerAdapter: StockInformViewPagerAdapter
+    ) {
         stockInformRetrofit.stockInform("J", stockCode)
             .enqueue(object : Callback<StockInformItem> {
                 override fun onResponse(
@@ -182,19 +200,22 @@ class MyViewModel : ViewModel() {
                         viewPager2.offscreenPageLimit = index + 1
                     }
                 }
+
                 override fun onFailure(call: Call<StockInformItem>, t: Throwable) {
 
                 }
             })
     }
-    fun singleViewPager(stockCode: String,pagerAdapter: StockInformViewPagerAdapter){
-        processStockInform(stockCode,0,pagerAdapter)
+
+    fun singleViewPager(stockCode: String, pagerAdapter: StockInformViewPagerAdapter) {
+        processStockInform(stockCode, 0, pagerAdapter)
     }
+
     //tabLayout처음 그리기
-    fun setTabLayout(stockCode:String):MutableLiveData<StockOutput>{
-        var list:MutableLiveData<StockOutput> = MutableLiveData()
-        stockInformRetrofit.stockInform("J",stockCode)
-            .enqueue(object : Callback<StockInformItem>{
+    fun setTabLayout(stockCode: String): MutableLiveData<StockOutput> {
+        var list: MutableLiveData<StockOutput> = MutableLiveData()
+        stockInformRetrofit.stockInform("J", stockCode)
+            .enqueue(object : Callback<StockInformItem> {
                 override fun onResponse(
                     call: Call<StockInformItem>,
                     response: Response<StockInformItem>
@@ -208,6 +229,30 @@ class MyViewModel : ViewModel() {
         return list
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////
+    //즐겨찾기 폴더 추가
+
+    private val db = Room.databaseBuilder(MyApplication.getAppContext(),FavoriteDB::class.java,"favorite")
+        .build()
+    fun addFolder(order: Int, folderName: String, context: Context) {
+        val folder = db.folderDAO()
+        val folderTable = FolderTable(folderName, order)
+        Thread{
+            folder?.insertFolder(folderTable)
+        }.start()
+    }
 
 
+    fun getAll(context: Context): MutableLiveData<List<FolderTable>>? {
+        var liveData: MutableLiveData<List<FolderTable>> = MutableLiveData()
+        Thread {
+            liveData.postValue(db.folderDAO().getAll())
+        }.start()
+        return liveData
+    }
+    fun count(){
+        Thread{
+            val i=db.folderDAO().count()
+        }.start()
+    }
 }

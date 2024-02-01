@@ -1,5 +1,6 @@
 package com.project.stockproject.room
 
+import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -7,7 +8,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "folder")
 data class FolderTable (
     @PrimaryKey
-    val folderName : String ?= "",
+    @NonNull
+    val folderName : String,
 
     val index : Int ?=0
 )
@@ -22,6 +24,9 @@ data class FolderTable (
     )]
 )
 data class ItemTable(
-    val itemName : String ?= "",
+    @PrimaryKey(autoGenerate = true)
+    val id:Int=0,
+    @NonNull
+    val itemName : String,
     val folderName: String?="",
 )

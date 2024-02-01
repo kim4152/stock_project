@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -20,6 +21,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
+import com.project.stockproject.common.BackKeyHandler
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FragmentStockInformBinding
 import com.project.stockproject.search.HistoryManager
@@ -38,7 +40,7 @@ class StockInformFragment : Fragment() {
     private lateinit var searchManager: SearchHistoryManager
     private lateinit var getStockCode: String
     private lateinit var getStockName: String
-
+    private lateinit var callback: OnBackPressedCallback
 
     companion object {
         var CURRENT_PAGE: Int? = 0
@@ -55,6 +57,7 @@ class StockInformFragment : Fragment() {
         return binding?.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(this)[MyViewModel::class.java]
@@ -67,15 +70,24 @@ class StockInformFragment : Fragment() {
             STOCKOUTPUT = it
             setTabLayout()
         })
+        setBackpress() //뒤로가기 제어
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         getStockInform()  //cardView에 정보 입력
         searchView()
         adapterSetting()
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d("dfadsfd", "onStart")
+    private fun setBackpress(){
+        callback = object : OnBackPressedCallback(true) {
+            val backKeyHandler = BackKeyHandler(activity)
+            override fun handleOnBackPressed() {
+                // 뒤로 가기 버튼 처리
+                findNavController().navigate(R.id.action_stockInformFragment_to_homeFragment)
+            }
+        }
     }
+
+
 
     //주식 정보 받아와서 viewPager에 뿌리기
     private fun getStockInform() {

@@ -14,7 +14,8 @@
             android:id="@+id/action_homeFragment_to_stockInformFragment"
             app:destination="@id/stockInformFragment"
             app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="false"/>
+            app:popUpToInclusive="true"
+            />
         <action
             android:id="@+id/action_homeFragment_to_majorIndexFragment"
             app:destination="@id/majorIndexFragment"

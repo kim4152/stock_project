@@ -61,6 +61,7 @@ class HomeFragment : Fragment() {
         adapterSetting()//searchView adapter
         searchView() //searchView setting
         setBackpress() //뒤로가기 설정
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         binding.majorIndexTextView.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_majorIndexFragment)
@@ -243,6 +244,7 @@ class HomeFragment : Fragment() {
                 viewModel.setSearchOnclik(it)
                 binding.searchView.hide()
                 findNavController().navigate(R.id.action_homeFragment_to_stockInformFragment)
+
             },
             onStarClick = {
                 //즐찾클릭
@@ -256,5 +258,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-
+    override fun onStop() {
+        super.onStop()
+        binding.searchView.hide()
+    }
 }

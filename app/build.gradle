@@ -3,7 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
 }
-
 android {
     namespace 'com.project.stockproject'
     compileSdk 34
@@ -34,6 +33,7 @@ android {
     viewBinding{
         enabled=true
     }
+
 }
 
 dependencies {
@@ -63,8 +63,9 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
 
     //room
-    implementation 'androidx.room:room-runtime:2.0.0'
-    annotationProcessor 'androidx.room:room-compiler:2.0.0'
+    implementation 'androidx.room:room-runtime:2.2.6'
+    kapt 'androidx.room:room-compiler:2.2.6'
+
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.google.code.gson:gson:2.8.5'
