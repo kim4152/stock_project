@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     app:cardCornerRadius="8dp"
-    app:cardBackgroundColor="#F8F8FF"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardElevation="10dp"
     app:cardUseCompatPadding="true"
     >
@@ -58,6 +58,7 @@
             android:hint="그룹이름"
             android:visibility="invisible"
             tools:visibility="visible"
+            app:endIconMode="clear_text"
             >
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEdit"

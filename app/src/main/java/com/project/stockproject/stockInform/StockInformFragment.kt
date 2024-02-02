@@ -87,6 +87,10 @@ class StockInformFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.searchView.hide()
+    }
 
 
     //주식 정보 받아와서 viewPager에 뿌리기
@@ -255,6 +259,7 @@ class StockInformFragment : Fragment() {
             },
             onStarClick = {
                 //즐찾클릭
+                findNavController().navigate(R.id.action_stockInformFragment_to_customDialogFavorite)
             }
         )
         binding.searchViewRecyclerView.apply {

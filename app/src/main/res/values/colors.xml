@@ -1,7 +1,7 @@
 <resources>
 
 
-
+    <color name="primary">@color/md_theme_light_primary</color>
     <color name="indicator_active">@color/md_theme_light_primary</color>
     <color name="indicator_inactive">@color/md_theme_light_secondary</color>
     <color name="transparent">#0000ffff</color>

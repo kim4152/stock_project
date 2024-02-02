@@ -42,6 +42,9 @@
             app:destination="@id/stockInformFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_stockInformFragment_to_customDialogFavorite"
+            app:destination="@id/customDialogFavorite" />
     </fragment>
     <fragment
         android:id="@+id/majorIndexFragment"
@@ -52,9 +55,24 @@
         android:id="@+id/favoriteFragment"
         android:name="com.project.stockproject.favorite.FavoriteFragment"
         android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+    </fragment>
     <dialog
         android:id="@+id/customDialogFavorite"
         android:name="com.project.stockproject.favorite.CustomDialogFavorite"
         android:label="CustomDialogFavorite" />
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="com.project.stockproject.favorite.EditFragment"
+        android:label="fragment_edit"
+        tools:layout="@layout/fragment_edit" >
+        <action
+            android:id="@+id/action_editFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"/>
+    </fragment>
 </navigation>

@@ -11,7 +11,7 @@ import com.project.stockproject.common.MyApplication.getAppContext
 import com.project.stockproject.databinding.MajorIndexItemBinding
 
 
-class MajorIndexViewPagerAdapter(val adapter: List<MajorIndexViewPagerDTO>) :
+class MajorIndexViewPagerAdapter(private val adapter: List<MajorIndexViewPagerDTO>) :
     RecyclerView.Adapter<MajorIndexViewPagerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

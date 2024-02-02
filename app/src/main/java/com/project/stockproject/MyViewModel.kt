@@ -16,6 +16,7 @@ import com.project.stockproject.home.MajorIndexViewPagerDTO
 import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.retrofit.RetrofitService
 import com.project.stockproject.room.FavoriteDB
+import com.project.stockproject.room.FavoriteDB.Companion.MIGRATION_1_2
 import com.project.stockproject.room.FolderDAO
 import com.project.stockproject.room.FolderTable
 import com.project.stockproject.search.HistoryManager
@@ -233,16 +234,21 @@ class MyViewModel : ViewModel() {
     //즐겨찾기 폴더 추가
 
     private val db = Room.databaseBuilder(MyApplication.getAppContext(),FavoriteDB::class.java,"favorite")
+        .addMigrations(MIGRATION_1_2)
         .build()
+
+    private val _addFolderResult = MutableLiveData<String>()
+    val addFolderResult : LiveData<String> get() = _addFolderResult
     fun addFolder(order: Int, folderName: String, context: Context) {
-        val folder = db.folderDAO()
         val folderTable = FolderTable(folderName, order)
         Thread{
-            folder?.insertFolder(folderTable)
+            Log.d("adfff","@"+folderTable.folderName)
+            db.folderDAO().insertFolder(folderTable)
+            _addFolderResult.postValue("end")
         }.start()
     }
 
-
+    //폴더 가져오기
     fun getAll(context: Context): MutableLiveData<List<FolderTable>>? {
         var liveData: MutableLiveData<List<FolderTable>> = MutableLiveData()
         Thread {
@@ -250,9 +256,32 @@ class MyViewModel : ViewModel() {
         }.start()
         return liveData
     }
-    fun count(){
+    fun count():MutableLiveData<Int>{
+        val liveData:MutableLiveData<Int> = MutableLiveData()
         Thread{
             val i=db.folderDAO().count()
+            liveData.postValue(i)
+        }.start()
+        return liveData
+    }
+//////////////////////////////////////////////////////////////////////////////
+    private val _folderDeleteResult = MutableLiveData<String>()
+    val folderDeleteResult: LiveData<String> get() = _folderDeleteResult
+    fun folderDelete(list: List<String>) {
+        Thread {
+            list.forEach {
+                db.folderDAO().folderDelete(it)
+            }
+            _folderDeleteResult.postValue("end")
+        }.start()
+    }
+    /////////////////////////////////////////////////////////////////////
+    private var _checkTextView = MutableLiveData<Int?>()
+    val checkTextViewResult: MutableLiveData<Int?> get() = _checkTextView
+    fun checkTextView(folderName: String){
+        Thread{
+            val int = db.folderDAO().checkTextView(folderName)
+            _checkTextView.postValue(int)
         }.start()
     }
 }

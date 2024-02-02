@@ -68,6 +68,11 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.searchView.hide()
+    }
+
 
     //뒤로가기 설정
     private fun setBackpress(){
@@ -256,10 +261,5 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = searchAdapter
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        binding.searchView.hide()
     }
 }

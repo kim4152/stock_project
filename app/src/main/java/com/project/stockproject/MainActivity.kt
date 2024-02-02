@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -145,6 +146,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+    //bottom navigation 숨기기
+    fun HideBottomNavi(state: Boolean){
+        if(state) binding.bottomNavigation.visibility = View.GONE else binding.bottomNavigation.visibility = View.VISIBLE
     }
 
 

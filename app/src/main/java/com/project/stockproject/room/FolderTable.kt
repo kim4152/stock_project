@@ -4,6 +4,9 @@ import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.project.stockproject.favorite.EditItem
+import com.project.stockproject.stockInform.tabFragment.NewsItem
+import com.project.stockproject.stockInform.tabFragment.NewsModel
 
 @Entity(tableName = "folder")
 data class FolderTable (
@@ -13,6 +16,17 @@ data class FolderTable (
 
     val index : Int ?=0
 )
+
+fun List<FolderTable>.transform() : List<EditItem>{
+    return this.map {
+        EditItem(
+            folderName = it.folderName ?: "",
+            isSelected = false,
+        )
+    }
+}
+
+
 
 @Entity(
     tableName = "item",
@@ -28,5 +42,7 @@ data class ItemTable(
     val id:Int=0,
     @NonNull
     val itemName : String,
+    @NonNull
+    val index : Int =0,
     val folderName: String?="",
 )
