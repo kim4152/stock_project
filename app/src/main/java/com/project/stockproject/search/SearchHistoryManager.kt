@@ -60,4 +60,5 @@ class SearchHistoryManager(private val context: Context) {
 
 
 
+
 }

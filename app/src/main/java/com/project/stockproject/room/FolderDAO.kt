@@ -8,7 +8,7 @@ import androidx.room.Insert
 import androidx.room.Query
 @Dao
 interface FolderDAO {
-    @Query("SELECT * FROM folder ORDER BY `index` DESC")
+    @Query("SELECT * FROM folder ORDER BY `index` ASC")
     fun getAll() :List<FolderTable>
     @Query("SELECT COUNT(*) FROM folder")
     fun count():Int

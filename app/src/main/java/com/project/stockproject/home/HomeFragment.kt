@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -248,12 +249,14 @@ class HomeFragment : Fragment() {
                 val viewModel= ViewModelProviders.of(this)[MyViewModel::class.java]
                 viewModel.setSearchOnclik(it)
                 binding.searchView.hide()
+
                 findNavController().navigate(R.id.action_homeFragment_to_stockInformFragment)
 
             },
             onStarClick = {
                 //즐찾클릭
-                findNavController().navigate(R.id.action_homeFragment_to_customDialogFavorite)
+                val bundle = bundleOf("stock_name" to it.stockName,"stock_code" to it.stockCode)
+                findNavController().navigate(R.id.action_homeFragment_to_customDialogFavorite,bundle)
 
             }
         )

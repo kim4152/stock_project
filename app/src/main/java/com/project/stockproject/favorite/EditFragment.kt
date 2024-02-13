@@ -1,5 +1,6 @@
 package com.project.stockproject.favorite
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.ColorFilter
 import android.os.Bundle
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -24,8 +26,37 @@ import com.project.stockproject.room.transform
 
 class EditFragment : Fragment() {
     private lateinit var binding: FragmentEditBinding
+    private lateinit var binding2: AddDialogBinding
     private lateinit var editAdapter: EditAdapter
     private lateinit var viewModel: MyViewModel
+    private lateinit var addDialog: AlertDialog
+    //observer를 호출할때마다 새로운 인스턴스 생성을 막기
+    private val observer: Observer<Int?> = Observer {
+        if (it == 0 && binding2.textView.text.toString() != "") {
+            // Folder 추가 완료
+            Log.d("adfd", it.toString())
+            addFolerComplete(binding2)
+            addDialog.dismiss() //다이얼로그 닫기
+            removePatentView()//다이얼로그 한번 더 띄울 때 부모뷰 초기화
+        } else {
+            // Folder 추가 실패
+            if (it != 0) {
+                makeDialog("중복된 그룹이름")
+            } else {
+                makeDialog("그룹이름 없음")
+            }
+
+        }
+    }
+    private fun makeDialog(title:String){
+        MaterialAlertDialogBuilder(requireContext(),R.style.ThemeOverlay_App_MaterialAlertDialog_Center)
+            .setIcon(R.drawable.baseline_info_24)
+            .setTitle(title)
+            .setPositiveButton("확인"){_,_->}
+            .setCancelable(false)
+            .show()
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,51 +72,48 @@ class EditFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProviders.of(this)[MyViewModel::class.java]
         binding = FragmentEditBinding.inflate(layoutInflater, container, false)
+        binding2 = AddDialogBinding.inflate(layoutInflater)
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setAdapter()
         binding.iconCheck.setOnClickListener { checkButton() }
         binding.iconDelete.setOnClickListener { deleButton() }
         binding.iconAdd.setOnClickListener { addButton() }
         //appbar 뒤로가기 클릭
         binding.topAppBar.setNavigationOnClickListener { findNavController().navigate(R.id.action_editFragment_to_favoriteFragment) }
-
     }
+
 
     //추가버튼
-
     private fun addButton() {
-        val binding2 : AddDialogBinding = AddDialogBinding.inflate(layoutInflater)
 
-        //observer를 호출할때마다 새로운 인스턴스 생성을 막기
-         val observer: Observer<Int?> = Observer {
-            if (it == 0 && binding2.textView.text.toString() != "") {
-                // Folder 추가 완료
-                addFolerComplete(binding2)
-            } else {
-                // Folder 추가 실패
-                if (it!=0) binding2.textView.error="중복된 그룹이름"
-                else binding2.textView.error="그룹이름을 입력해주세요"
-            }
-        }
-
-        MaterialAlertDialogBuilder(requireContext())
+        val builder = MaterialAlertDialogBuilder(requireContext())
             .setTitle("그룹추가")
-
             .setView(binding2.root)
-            .setNegativeButton("취소") { dialog, which ->
+            .setOnCancelListener { removePatentView() }
+            .setNegativeButton("취소") { _, _ ->
+                removePatentView()//다이얼로그 한번 더 띄울 때 부모뷰 초기화
+            }
+            .setPositiveButton("추가") { _, _ ->
 
             }
-            .setPositiveButton("추가") { dialog, which ->
-                viewModel.checkTextView(binding2.textView.text.toString())
-                viewModel.checkTextViewResult.observe(this, observer)
-            }
-            .show()
-
+        addDialog = builder.create()
+        addDialog.show()
+        addDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            viewModel.checkTextView(binding2.textView.text.toString())
+            viewModel.checkTextViewResult.observe(this, observer)
+        }
     }
+
+    //다이얼로그 한번 더 띄울 때 부모뷰 초기화
+    private fun removePatentView() {
+        val parent = binding2.root.parent as? ViewGroup
+        parent?.removeView(binding2.root)
+    }
+
 
     //db에 저장
     private fun addFolerComplete(binding2: AddDialogBinding) {
@@ -103,6 +131,7 @@ class EditFragment : Fragment() {
             }
         })
     }
+
     private fun getAll() {
         viewModel.getAll(requireContext())?.observe(this, Observer {
             editAdapter.submitList(it.transform())
@@ -113,7 +142,7 @@ class EditFragment : Fragment() {
     private fun deleButton() {
         var tmpList: MutableList<String> = mutableListOf()
         editAdapter.currentList.forEach {
-            Log.d("afdfasdf",it.folderName+":"+it.isSelected)
+            Log.d("afdfasdf", it.folderName + ":" + it.isSelected)
             if (it.isSelected) tmpList.add(it.folderName)
         }
         if (tmpList.size > 0) {
@@ -174,7 +203,7 @@ class EditFragment : Fragment() {
     private fun setAdapter() {
         editAdapter = EditAdapter {
             //아이템 클릭
-            it.isSelected=(!it.isSelected)
+            it.isSelected = (!it.isSelected)
             editAdapter.notifyDataSetChanged()
         }
         binding.recyclerView.apply {

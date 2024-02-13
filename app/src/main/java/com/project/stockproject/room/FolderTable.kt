@@ -45,4 +45,6 @@ data class ItemTable(
     @NonNull
     val index : Int =0,
     val folderName: String?="",
+    @NonNull
+    val itemCode : String,
 )

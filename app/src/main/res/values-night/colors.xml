@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name = "secondaryContainer">#3C4858</color>
+    <color name="md_theme_tertiary">#D7BDE4</color>
+    <color name="surface">#1A1C1E</color>
+    <color name="basic">#303030</color>
     <color name="primary">@color/md_theme_dark_primary</color>
     <color name="indicator_active">@color/md_theme_dark_primary</color>
     <color name="indicator_inactive">@color/md_theme_dark_secondary</color>

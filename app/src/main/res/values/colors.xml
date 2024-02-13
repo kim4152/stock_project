@@ -1,6 +1,8 @@
 <resources>
-
-
+    <color name = "secondaryContainer">#D7E3F8</color>
+    <color name="surface">#FDFCFF</color>
+    <color name="md_theme_tertiary">#6B5778</color>
+    <color name="basic">#000000</color>
     <color name="primary">@color/md_theme_light_primary</color>
     <color name="indicator_active">@color/md_theme_light_primary</color>
     <color name="indicator_inactive">@color/md_theme_light_secondary</color>

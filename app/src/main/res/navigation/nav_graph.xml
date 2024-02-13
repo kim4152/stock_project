@@ -63,7 +63,8 @@
     <dialog
         android:id="@+id/customDialogFavorite"
         android:name="com.project.stockproject.favorite.CustomDialogFavorite"
-        android:label="CustomDialogFavorite" />
+        android:label="CustomDialogFavorite" >
+    </dialog>
     <fragment
         android:id="@+id/editFragment"
         android:name="com.project.stockproject.favorite.EditFragment"

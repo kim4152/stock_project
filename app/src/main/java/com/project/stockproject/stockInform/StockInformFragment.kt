@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -97,7 +98,16 @@ class StockInformFragment : Fragment() {
     private fun getStockInform() {
         val list = mutableListOf<HistoryManager>()
         val viewPager = binding.stockInforViewPager
-        val pagerAdapter = StockInformViewPagerAdapter(mutableListOf())
+        val pagerAdapter = StockInformViewPagerAdapter(mutableListOf(), favoriteClick = {
+            val stockName=searchManager.getStockNameByCode(it)
+
+            if (stockName != null) {
+                val bundle = bundleOf("stock_name" to stockName,"stock_code" to it)
+                findNavController().navigate(R.id.action_stockInformFragment_to_customDialogFavorite,bundle)
+            }
+
+
+        })
 
 
         //최근검색기록 10개의 주식 정보 받아오기
@@ -259,7 +269,8 @@ class StockInformFragment : Fragment() {
             },
             onStarClick = {
                 //즐찾클릭
-                findNavController().navigate(R.id.action_stockInformFragment_to_customDialogFavorite)
+                val bundle = bundleOf("stock_name" to it.stockName,"stock_code" to it.stockCode)
+                findNavController().navigate(R.id.action_stockInformFragment_to_customDialogFavorite,bundle)
             }
         )
         binding.searchViewRecyclerView.apply {

@@ -16,9 +16,10 @@ import com.project.stockproject.home.MajorIndexViewPagerDTO
 import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.retrofit.RetrofitService
 import com.project.stockproject.room.FavoriteDB
-import com.project.stockproject.room.FavoriteDB.Companion.MIGRATION_1_2
+import com.project.stockproject.room.FavoriteDB.Companion.MIGRATION_2_3
 import com.project.stockproject.room.FolderDAO
 import com.project.stockproject.room.FolderTable
+import com.project.stockproject.room.ItemTable
 import com.project.stockproject.search.HistoryManager
 import com.project.stockproject.search.Search
 import com.project.stockproject.search.SearchHistoryManager
@@ -117,6 +118,7 @@ class MyViewModel : ViewModel() {
 
         private fun majorstockCrawling(name: String) {
             val url = "https://finance.naver.com/sise/sise_index_day.nhn?code=$name&page=1"
+
             val source = URL(url).readText()
             val doc = Jsoup.parse(source)
 
@@ -201,11 +203,26 @@ class MyViewModel : ViewModel() {
                         viewPager2.offscreenPageLimit = index + 1
                     }
                 }
-
                 override fun onFailure(call: Call<StockInformItem>, t: Throwable) {
-
                 }
             })
+    }
+    //개별종목보회
+    fun stockInform(stockCode: String):MutableLiveData<StockOutput>{
+        val liveData:MutableLiveData<StockOutput> = MutableLiveData()
+        stockInformRetrofit.stockInform("J",stockCode).enqueue(object :Callback<StockInformItem>{
+            override fun onResponse(
+                call: Call<StockInformItem>,
+                response: Response<StockInformItem>
+            ) {
+               liveData.postValue(response.body()?.output)
+            }
+
+            override fun onFailure(call: Call<StockInformItem>, t: Throwable) {
+            }
+
+        })
+        return liveData
     }
 
     fun singleViewPager(stockCode: String, pagerAdapter: StockInformViewPagerAdapter) {
@@ -229,12 +246,11 @@ class MyViewModel : ViewModel() {
             })
         return list
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
     //즐겨찾기 폴더 추가
 
     private val db = Room.databaseBuilder(MyApplication.getAppContext(),FavoriteDB::class.java,"favorite")
-        .addMigrations(MIGRATION_1_2)
+        .addMigrations(MIGRATION_2_3)
         .build()
 
     private val _addFolderResult = MutableLiveData<String>()
@@ -284,4 +300,29 @@ class MyViewModel : ViewModel() {
             _checkTextView.postValue(int)
         }.start()
     }
+    /////////////////////////////////////////////////////////////////////
+    private var _countItem = MutableLiveData<Int?>()
+    val countItemResult : MutableLiveData<Int?> get() = _countItem
+    fun countItem(folderName: String){
+        Thread{
+            val int =db.itemDAO().count(folderName)
+            _countItem.postValue(int)
+        }.start()
+    }
+    /////////////////////////////////////////////////////////////////////
+    fun insertItem(stockName:String,index: Int,folderName: String,stockCode: String){
+        Thread{
+            db.itemDAO().insertItem(ItemTable(itemName = stockName, index = index, folderName = folderName, itemCode = stockCode))
+        }.start()
+    }
+    /////////////////////////////////////////
+    private var _getAllItems = MutableLiveData<List<ItemTable>>()
+    val getAllItemsResult : MutableLiveData<List<ItemTable>> get() = _getAllItems
+    fun getAllItems(folderName: String){
+        Thread{
+            _getAllItems.postValue(db.itemDAO().getAll(folderName))
+        }.start()
+    }
+    ////////////////////////////////////////////
+
 }

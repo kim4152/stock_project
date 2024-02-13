@@ -1,6 +1,5 @@
 package com.project.stockproject.favorite
 
-import android.R
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
@@ -10,13 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListUpdateCallback
 import com.project.stockproject.MyViewModel
+import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.CustomDialogAddFavoriteBinding
 
 
@@ -49,14 +49,13 @@ class CustomDialogFavorite() : DialogFragment() {
         dialog!!.window!!.setLayout(width, height)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         addFolder()//폴더 추가
         binding.buttonNO.setOnClickListener { buttonNO() } //취소버튼
         binding.buttonYES.setOnClickListener { buttonYES() } //확인버튼
         adapterSetting() //어뎁터 정의
         totalCountSet()
-
     }
 
     //총 폴더 개수
@@ -88,6 +87,7 @@ class CustomDialogFavorite() : DialogFragment() {
             dismiss()   //dialog 닫기
         }
     }
+
     //확인버튼
     //observer를 호출할때마다 새로운 인스턴스 생성을 막기
     private val observer: Observer<Int?> = Observer {
@@ -106,8 +106,27 @@ class CustomDialogFavorite() : DialogFragment() {
             viewModel.checkTextViewResult.observe(this, observer)
         } else {//관심종목 추가일때
             //파일에 관심종목 추가, dialog 닫기
+            val stockName = requireArguments().getString("stock_name")
+            if (stockName != null) {
+                viewModel.countItem(stockName)
+            }
+            viewModel.countItemResult.observe(this, countObserver)
         }
     }
+    private val countObserver: Observer<Int?> = Observer {
+        val stockName = requireArguments().getString("stock_name")
+        val stockCode = requireArguments().getString("stock_code")
+        val index = it?.plus(1)
+        var folderName : String? =favoriteDialogAdapter.currentList.find { it.isChecked }?.folderName
+        if (folderName.isNullOrEmpty()){//관심 그룹 선택X
+            Toast.makeText(requireContext(),"관심그룹을 선택해주세요",Toast.LENGTH_SHORT).show()
+        }else{//관심그룹 선택 -> 저장
+            viewModel.insertItem(stockName!!,index!!,folderName,stockCode!!)
+            dismiss()
+            Toast.makeText(requireContext(),"추가 되었습니다",Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     //folder 이름 검사
 
@@ -124,25 +143,40 @@ class CustomDialogFavorite() : DialogFragment() {
             if (it == "end") {
                 getAll() //폴더 다 불러오기
                 binding.textInputEdit.text = null
+                totalCountSet()
             }
         })
     }
 
     //어댑터 정의
     private fun adapterSetting() {
-        favoriteDialogAdapter = FavoriteDialogAdapter {
-            //아이템 클릭
-        }
+        favoriteDialogAdapter = FavoriteDialogAdapter(
+            onClick = {
+                adapterItemClick(it)
+            },
+            requireContext()
+        )
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = favoriteDialogAdapter
         }
         getAll() //폴더 다 불러오기
     }
+    private fun adapterItemClick(item: CustomDialogItem){
+        if (item.isChecked){
+            item.isChecked=false
+        }else{
+            favoriteDialogAdapter.currentList.forEach {
+                it.isChecked=false
+            }
+            item.isChecked=true
+        }
+        favoriteDialogAdapter.notifyDataSetChanged()
+    }
 
     private fun getAll() {
         viewModel.getAll(requireContext())?.observe(this, Observer {
-            favoriteDialogAdapter.submitList(it)
+            favoriteDialogAdapter.submitList(it.transform())
         })
     }
 
@@ -169,3 +203,4 @@ class CustomDialogFavorite() : DialogFragment() {
         view?.let { hideKeyboard(it) }
     }
 }
+

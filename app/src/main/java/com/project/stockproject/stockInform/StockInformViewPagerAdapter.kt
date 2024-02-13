@@ -13,7 +13,9 @@ import com.project.stockproject.databinding.StockInformItemBinding
 import com.project.stockproject.home.MajorIndexViewPagerAdapter
 import java.text.DecimalFormat
 
-class StockInformViewPagerAdapter(private var adapterList: MutableList<StockOutput>) :
+class StockInformViewPagerAdapter(private var adapterList: MutableList<StockOutput>,
+                                  private val favoriteClick:(stockName:String)->Unit
+) :
     RecyclerView.Adapter<StockInformViewPagerAdapter.ViewHolder>() {
 
     fun addItem(item: StockOutput) {
@@ -130,6 +132,8 @@ class StockInformViewPagerAdapter(private var adapterList: MutableList<StockOutp
                         R.color.gray))//배경 색 설정
                 }
             }
+            viewBinding.favorite.setOnClickListener {favoriteClick(item.stck_shrn_iscd)  }
+
         }
     }
 
