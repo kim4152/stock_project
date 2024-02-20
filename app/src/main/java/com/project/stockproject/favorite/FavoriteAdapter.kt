@@ -1,63 +1,37 @@
 package com.project.stockproject.favorite
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.project.stockproject.MyViewModel
+import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FavoriteViewpagerBinding
 import com.project.stockproject.room.FolderTable
 import com.project.stockproject.room.ItemTable
 
-class FavoriteAdapter(private val adapter: List<FolderTable>,val myViewModel: MyViewModel,val context: FavoriteFragment) :
-    RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
-    private lateinit var subAdapter:SubAdapter
-    data class SubItem(
-        val stockName: String,
-        val stockCode: String,
-    )
-    fun List<ItemTable>.transform() : List<SubItem>{
-        return this.map {
-            SubItem(
-                stockName = it.itemName,
-                stockCode = it.itemCode,
-            )
-        }
-    }
-
-    inner class ViewHolder(private val viewBinding: FavoriteViewpagerBinding) :
-        RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(item: FolderTable) {
-            setAdapter(viewBinding.recyclerView,item,context)
-        }
-    }
-
-    private fun setAdapter(recyclerView: RecyclerView, item: FolderTable, af: FavoriteFragment) {
-        subAdapter = SubAdapter(
-            item.folderName,myViewModel,context
-        )
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = subAdapter
-        }
-        myViewModel.getAllItems(item.folderName)
-        myViewModel.getAllItemsResult.observe(context, Observer { it->
-            subAdapter.submitList(it.transform())
-        })
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            FavoriteViewpagerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
-    }
-
+class FavoriteAdapter(
+    private val adapter: List<FolderTable>,fragmentActivity: FragmentActivity
+) :
+    FragmentStateAdapter(fragmentActivity) {
     override fun getItemCount(): Int {
-        return adapter.size
+        return Int.MAX_VALUE
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(adapter[position])
+    override fun createFragment(position: Int): Fragment {
+        if (adapter.isNotEmpty()){
+            return SubFragment(adapter[position%adapter.size])
+        }else{
+            return SubFragment(adapter[0])
+        }
     }
 }

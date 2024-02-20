@@ -191,7 +191,7 @@ class HomeFragment : Fragment() {
                 }*/
                 //타자 칠때
                 addTextChangedListener {
-                    searchFor = it.toString()
+                    searchFor = it.toString().uppercase()
                     viewModel.cancelSearch()
                     searchUser()
                 }
@@ -249,7 +249,6 @@ class HomeFragment : Fragment() {
                 val viewModel= ViewModelProviders.of(this)[MyViewModel::class.java]
                 viewModel.setSearchOnclik(it)
                 binding.searchView.hide()
-
                 findNavController().navigate(R.id.action_homeFragment_to_stockInformFragment)
 
             },

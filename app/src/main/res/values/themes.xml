@@ -37,9 +37,9 @@
         <item name="drawableSize">6sp</item>
     </style>
 
-    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog"></style>
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog"/>
 
-    <style name="ThemeOverlay.App.MaterialAlertDialog.Center" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered"></style>
+    <style name="ThemeOverlay.App.MaterialAlertDialog.Center" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered"/>
 
 
 </resources>

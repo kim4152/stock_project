@@ -63,27 +63,53 @@ class StockInformFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(this)[MyViewModel::class.java]
         searchManager = SearchHistoryManager(MyApplication.getAppContext())
+
+        try{
+            //관심종목에서 왔을때
+            if (!requireArguments().getString("stockName").isNullOrEmpty()){
+                setBackpress("favorite") //뒤로가기 제어
+                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+                val name = requireArguments().getString("stockName")
+                val code = requireArguments().getString("stockCode")
+                getStockName = name.toString()
+                getStockCode = code.toString()
+                binding.searchBar.text = getStockName
+            }
+            //아니라면 오류발생 ->
+        }catch (e:Exception){
+            setBackpress("") //뒤로가기 제어
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+            getStockName = searchManager.getSearchHistory().first().stockName
+            getStockCode = searchManager.getSearchHistory().first().stockCode
+            binding.searchBar.text = getStockName
+        }
+
         //검색창 클릭 결과
-        getStockName = searchManager.getSearchHistory().first().stockName
-        getStockCode = searchManager.getSearchHistory().first().stockCode
-        binding.searchBar.text = getStockName
+
+
         viewModel.setTabLayout(getStockCode).observe(this, Observer {
             STOCKOUTPUT = it
             setTabLayout()
         })
-        setBackpress() //뒤로가기 제어
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+
         getStockInform()  //cardView에 정보 입력
         searchView()
         adapterSetting()
     }
 
-    private fun setBackpress(){
+    private fun setBackpress(from:String){
         callback = object : OnBackPressedCallback(true) {
             val backKeyHandler = BackKeyHandler(activity)
             override fun handleOnBackPressed() {
                 // 뒤로 가기 버튼 처리
-                findNavController().navigate(R.id.action_stockInformFragment_to_homeFragment)
+                if (from == "favorite"){
+                    findNavController().navigate(R.id.action_stockInformFragment_to_favoriteFragment)
+                }else{
+                    findNavController().navigate(R.id.action_stockInformFragment_to_homeFragment)
+                }
             }
         }
     }
@@ -98,15 +124,13 @@ class StockInformFragment : Fragment() {
     private fun getStockInform() {
         val list = mutableListOf<HistoryManager>()
         val viewPager = binding.stockInforViewPager
+
         val pagerAdapter = StockInformViewPagerAdapter(mutableListOf(), favoriteClick = {
             val stockName=searchManager.getStockNameByCode(it)
-
             if (stockName != null) {
                 val bundle = bundleOf("stock_name" to stockName,"stock_code" to it)
                 findNavController().navigate(R.id.action_stockInformFragment_to_customDialogFavorite,bundle)
             }
-
-
         })
 
 
@@ -206,7 +230,7 @@ class StockInformFragment : Fragment() {
             .editText.apply {
                 //타자 칠때
                 addTextChangedListener {
-                    searchFor = it.toString()
+                    searchFor = it.toString().uppercase()
                     viewModel.cancelSearch()
                     searchUser()
                 }

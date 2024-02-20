@@ -18,5 +18,4 @@
         android:textColorHint="?attr/colorSecondary"
         android:singleLine="true"
         />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

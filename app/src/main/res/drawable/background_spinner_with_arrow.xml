@@ -3,7 +3,7 @@
     <item android:drawable="@drawable/background_spinner" />
     <!-- Spinner Arrow -->
     <item
-        android:gravity="end|center_vertical"
+        android:gravity="start|center_vertical"
         android:width="24dp"
         android:height="24dp">
 

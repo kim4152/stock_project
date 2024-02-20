@@ -17,7 +17,11 @@ interface FolderDAO {
 
     @Insert
     fun insertFolder(folderTable:FolderTable)
-    @Query("DELETE FROM folder WHERE folderName = :name")
-    fun folderDelete(name:String)
+    @Query("DELETE FROM folder WHERE folderName IN(:name) ")
+    fun folderDelete(name:List<String>)
 
+    @Query("UPDATE folder SET folderName = :newName WHERE folderName = :oldName")
+    fun updateFolderName(oldName: String, newName: String)
+    @Query("SELECT MAX(`folderId`) FROM folder")
+    fun getMaxOrder(): Int?
 }

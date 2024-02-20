@@ -9,7 +9,8 @@ import com.project.stockproject.databinding.EditItemBinding
 import com.project.stockproject.databinding.FavoriteDialogItemBinding
 import com.project.stockproject.room.FolderTable
 
-class EditAdapter(private val onClick:(EditItem)->Unit) : ListAdapter<EditItem, EditAdapter.ViewHolder>(diffUtil) {
+class EditAdapter(private val onClick:(EditItem)->Unit, )
+    : ListAdapter<EditItem, EditAdapter.ViewHolder>(diffUtil) {
 
 
     inner class ViewHolder(val binding: EditItemBinding) : RecyclerView.ViewHolder(binding.root){
@@ -20,8 +21,6 @@ class EditAdapter(private val onClick:(EditItem)->Unit) : ListAdapter<EditItem, 
             binding.root.setOnClickListener {
                 onClick(item)
             }
-
-
         }
     }
 

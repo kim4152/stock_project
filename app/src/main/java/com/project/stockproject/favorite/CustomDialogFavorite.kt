@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.CustomDialogAddFavoriteBinding
+import com.project.stockproject.room.FolderTable
 
 
 class CustomDialogFavorite() : DialogFragment() {
@@ -89,8 +90,7 @@ class CustomDialogFavorite() : DialogFragment() {
     }
 
     //확인버튼
-    //observer를 호출할때마다 새로운 인스턴스 생성을 막기
-    private val observer: Observer<Int?> = Observer {
+    private val observer:Observer<Int> = Observer {
         if (it == 0 && binding.textInputEdit.text.toString() != "") {
             // Folder 추가 완료
             addFolerComplete()
@@ -103,30 +103,43 @@ class CustomDialogFavorite() : DialogFragment() {
     private fun buttonYES() {
         if (binding.textInputLayout.isVisible) { //폴더 추가일떄
             viewModel.checkTextView(binding.textInputEdit.text.toString())
-            viewModel.checkTextViewResult.observe(this, observer)
+            viewModel.checkTextViewResult.observe(this,observer)
         } else {//관심종목 추가일때
             //파일에 관심종목 추가, dialog 닫기
             val stockName = requireArguments().getString("stock_name")
             if (stockName != null) {
-                viewModel.countItem(stockName)
+                var addSuc = true
+                val folderName = favoriteDialogAdapter.currentList.find { it.isChecked }?.folderName
+                viewModel.itemCheck(folderName, listOf(stockName)).observe(this, Observer {
+                    if(it>0){ //동일 종목이 있을때
+                        MyApplication.makeToast("동일 종목이 있습니다")
+                    }else{ //동일 종목이 없을떄 관종 추가
+                        if (folderName != null) { insertItem(folderName) }
+                    }
+                })
             }
-            viewModel.countItemResult.observe(this, countObserver)
-        }
-    }
-    private val countObserver: Observer<Int?> = Observer {
-        val stockName = requireArguments().getString("stock_name")
-        val stockCode = requireArguments().getString("stock_code")
-        val index = it?.plus(1)
-        var folderName : String? =favoriteDialogAdapter.currentList.find { it.isChecked }?.folderName
-        if (folderName.isNullOrEmpty()){//관심 그룹 선택X
-            Toast.makeText(requireContext(),"관심그룹을 선택해주세요",Toast.LENGTH_SHORT).show()
-        }else{//관심그룹 선택 -> 저장
-            viewModel.insertItem(stockName!!,index!!,folderName,stockCode!!)
-            dismiss()
-            Toast.makeText(requireContext(),"추가 되었습니다",Toast.LENGTH_SHORT).show()
         }
     }
 
+    //동일 종목이 없을떄 관종 추가
+    private fun insertItem(folderName:String){
+        viewModel.countItem(folderName).observe(this, Observer {observerLiveData->
+            observerLiveData.observe(this, Observer {observerInt->
+                val stockName = requireArguments().getString("stock_name")
+                val stockCode = requireArguments().getString("stock_code")
+                val index = observerInt?.plus(1)
+                var folderName : String? =favoriteDialogAdapter.currentList.find {dialogItem->
+                    dialogItem.isChecked }?.folderName
+                if (folderName.isNullOrEmpty()){//관심 그룹 선택X
+                    Toast.makeText(requireContext(),"관심그룹을 선택해주세요",Toast.LENGTH_SHORT).show()
+                }else{//관심그룹 선택 -> 저장
+                    viewModel.insertItem(stockName!!,folderName,stockCode!!)
+                    dismiss()
+                    Toast.makeText(requireContext(),"추가 되었습니다",Toast.LENGTH_SHORT).show()
+                }
+            })
+        })
+    }
 
     //folder 이름 검사
 
@@ -175,10 +188,12 @@ class CustomDialogFavorite() : DialogFragment() {
     }
 
     private fun getAll() {
-        viewModel.getAll(requireContext())?.observe(this, Observer {
+        viewModel.getAll()
+        viewModel.getAllResult.observe(this, Observer {
             favoriteDialogAdapter.submitList(it.transform())
         })
     }
+
 
     //키보드 내리기
     @SuppressLint("ServiceCast")

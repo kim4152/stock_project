@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -22,10 +23,13 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.project.stockproject.common.BackKeyHandler
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.ActivityMainBinding
+import com.project.stockproject.favorite.EditFragment
 import com.project.stockproject.home.HomeFragment
 import com.project.stockproject.search.SearchAdapter
 import com.project.stockproject.search.SearchHistory
@@ -33,7 +37,7 @@ import com.project.stockproject.search.SearchHistoryManager
 import com.project.stockproject.stockInform.StockInformFragment
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity()  {
     private lateinit var binding: ActivityMainBinding
     private lateinit var searchAdapter: SearchAdapter
     private lateinit var viewModel: MyViewModel
@@ -55,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         // Bottom Navigation에 NavController 연결
         val bottomNav = binding.bottomNavigation
         bottomNav.setupWithNavController(navController)
+
 
        // setBottomNavigation(bottomNav)//바텀 네비게이션
         searchManager= SearchHistoryManager(MyApplication.getAppContext())
@@ -109,34 +114,7 @@ class MainActivity : AppCompatActivity() {
             showAni(isConnected)
         })
     }
-    //bottom navigation
-    private fun setBottomNavigation(bottomNavigation:BottomNavigationView){
-        bottomNavigation.setOnItemSelectedListener {
-            when(it.itemId) {
-                R.id.homeFragment -> {
-                    //setTransaction(1)
-                    MyApplication.makeToast("1")
-                    true
-                }
-                R.id.stockInformFragment -> {
-                    //setTransaction(2)
-                    MyApplication.makeToast("2")
-                    true
-                }
-                else -> false
-            }
-        }
-    }
-    //fragment 이동 처리
-    private fun setTransaction(position:Int){
-        val transaction = supportFragmentManager.beginTransaction()
 
-        when(position){
-            1->{transaction.replace(R.id.mainFrame, HomeFragment()).addToBackStack(null).commit()}
-            2->{transaction.replace(R.id.mainFrame, StockInformFragment()).addToBackStack(null).commit()}
-            3->{transaction.replace(R.id.mainFrame, HomeFragment()).addToBackStack(null).commit()}
-        }
-    }
 
 
     //뒤로가기 이벤트

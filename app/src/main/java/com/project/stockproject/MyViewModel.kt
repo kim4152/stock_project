@@ -16,7 +16,8 @@ import com.project.stockproject.home.MajorIndexViewPagerDTO
 import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.retrofit.RetrofitService
 import com.project.stockproject.room.FavoriteDB
-import com.project.stockproject.room.FavoriteDB.Companion.MIGRATION_2_3
+
+import com.project.stockproject.room.FavoriteDB.Companion.MIGRATION_3_4
 import com.project.stockproject.room.FolderDAO
 import com.project.stockproject.room.FolderTable
 import com.project.stockproject.room.ItemTable
@@ -249,28 +250,33 @@ class MyViewModel : ViewModel() {
 ///////////////////////////////////////////////////////////////////////////
     //즐겨찾기 폴더 추가
 
-    private val db = Room.databaseBuilder(MyApplication.getAppContext(),FavoriteDB::class.java,"favorite")
-        .addMigrations(MIGRATION_2_3)
+    private val db = Room.databaseBuilder(MyApplication.getAppContext(),FavoriteDB::class.java,"favorite7")
+        //.addMigrations(MIGRATION_3_4)
         .build()
 
     private val _addFolderResult = MutableLiveData<String>()
     val addFolderResult : LiveData<String> get() = _addFolderResult
     fun addFolder(order: Int, folderName: String, context: Context) {
-        val folderTable = FolderTable(folderName, order)
         Thread{
-            Log.d("adfff","@"+folderTable.folderName)
+            var index =db.folderDAO().getMaxOrder()
+            if (index==null){
+                index=0
+            }else{
+                index
+            }
+            val folderTable = FolderTable(0,folderName,index)
             db.folderDAO().insertFolder(folderTable)
             _addFolderResult.postValue("end")
         }.start()
     }
 
     //폴더 가져오기
-    fun getAll(context: Context): MutableLiveData<List<FolderTable>>? {
-        var liveData: MutableLiveData<List<FolderTable>> = MutableLiveData()
+    val _getAll = MutableLiveData<List<FolderTable>>()
+    val getAllResult : LiveData<List<FolderTable>> get() = _getAll
+    fun getAll() {
         Thread {
-            liveData.postValue(db.folderDAO().getAll())
+            _getAll.postValue(db.folderDAO().getAll())
         }.start()
-        return liveData
     }
     fun count():MutableLiveData<Int>{
         val liveData:MutableLiveData<Int> = MutableLiveData()
@@ -280,49 +286,92 @@ class MyViewModel : ViewModel() {
         }.start()
         return liveData
     }
-//////////////////////////////////////////////////////////////////////////////
+    //폴더 삭제
     private val _folderDeleteResult = MutableLiveData<String>()
     val folderDeleteResult: LiveData<String> get() = _folderDeleteResult
     fun folderDelete(list: List<String>) {
         Thread {
-            list.forEach {
-                db.folderDAO().folderDelete(it)
-            }
+                db.folderDAO().folderDelete(list)
             _folderDeleteResult.postValue("end")
         }.start()
     }
-    /////////////////////////////////////////////////////////////////////
-    private var _checkTextView = MutableLiveData<Int?>()
-    val checkTextViewResult: MutableLiveData<Int?> get() = _checkTextView
+    //아이템 삭제
+    private val _itemDelete = MutableLiveData<String>()
+    val itemDeleteResult: LiveData<String> get() = _itemDelete
+    fun itemDelete(folderName:String,list: List<String>) {
+
+        Thread {
+                db.itemDAO().itemDelete(folderName,list)
+            _itemDelete.postValue("end")
+        }.start()
+    }
+    //폴더 개수 체크
+    private val _checkTextView = MutableLiveData<Int>()
+    val checkTextViewResult:LiveData<Int> get() = _checkTextView
     fun checkTextView(folderName: String){
         Thread{
             val int = db.folderDAO().checkTextView(folderName)
             _checkTextView.postValue(int)
         }.start()
     }
-    /////////////////////////////////////////////////////////////////////
-    private var _countItem = MutableLiveData<Int?>()
-    val countItemResult : MutableLiveData<Int?> get() = _countItem
-    fun countItem(folderName: String){
+    //해당 폴더에 있는 아이템 수 조회
+    fun countItem(folderName: String?): MutableLiveData<LiveData<Int>>{
+        val countItem : MutableLiveData<LiveData<Int>> = MutableLiveData()
         Thread{
-            val int =db.itemDAO().count(folderName)
-            _countItem.postValue(int)
+            val int = folderName?.let { db.itemDAO().count(it) }
+            countItem.postValue(int)
         }.start()
+        return countItem
     }
     /////////////////////////////////////////////////////////////////////
-    fun insertItem(stockName:String,index: Int,folderName: String,stockCode: String){
+    fun insertItem(stockName:String,folderName: String,stockCode: String){
         Thread{
-            db.itemDAO().insertItem(ItemTable(itemName = stockName, index = index, folderName = folderName, itemCode = stockCode))
+            var index = db.itemDAO().getMaxOrder()
+            if (index==null){
+                index=0
+            }else{
+                index
+            }
+
+            db.itemDAO().insertItem(ItemTable(itemName = stockName, folderName = folderName, index = index, itemCode = stockCode))
         }.start()
     }
-    /////////////////////////////////////////
-    private var _getAllItems = MutableLiveData<List<ItemTable>>()
-    val getAllItemsResult : MutableLiveData<List<ItemTable>> get() = _getAllItems
+    //해당 폴더에 있는 아이템 조회
+    private val _getAllItems = MutableLiveData<List<ItemTable>>()
+    val getAllItemsResult:LiveData<List<ItemTable>> get() = _getAllItems
     fun getAllItems(folderName: String){
         Thread{
             _getAllItems.postValue(db.itemDAO().getAll(folderName))
         }.start()
     }
-    ////////////////////////////////////////////
+
+
+    //폴더 이름 변경
+    fun reNameFolder(oldName:String,newName:String):MutableLiveData<String>{
+        val liveData : MutableLiveData<String> = MutableLiveData()
+        Thread{
+            db.folderDAO().updateFolderName(oldName,newName)
+            liveData.postValue("finish")
+        }.start()
+        return liveData
+    }
+    //동일 종목 체크
+    fun itemCheck(folderName: String?,stockName: List<String>):MutableLiveData<Int>{
+        val liveData: MutableLiveData<Int> = MutableLiveData()
+        Thread{
+            if (folderName != null) {
+                val int =db.itemDAO().checkItem(folderName,stockName)
+                liveData.postValue(int)
+            }
+        }.start()
+        return liveData
+    }
+    //itemMove
+    fun itemMove(folderName: String,stockName:String,index:Int){
+        Thread{
+            Log.d("dafsdfd","$folderName 테이블, $stockName -> $index")
+            db.itemDAO().updateOrder(folderName,stockName,index)
+        }.start()
+    }
 
 }

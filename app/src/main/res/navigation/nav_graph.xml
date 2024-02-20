@@ -45,6 +45,11 @@
         <action
             android:id="@+id/action_stockInformFragment_to_customDialogFavorite"
             app:destination="@id/customDialogFavorite" />
+        <action
+            android:id="@+id/action_stockInformFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"/>
     </fragment>
     <fragment
         android:id="@+id/majorIndexFragment"
@@ -58,7 +63,20 @@
         tools:layout="@layout/fragment_favorite" >
         <action
             android:id="@+id/action_favoriteFragment_to_editFragment"
-            app:destination="@id/editFragment" />
+            app:destination="@id/editFragment"
+            app:popUpTo="@id/favoriteFragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_favoriteFragment_to_stockInformFragment"
+            app:destination="@id/stockInformFragment"
+            app:popUpTo="@id/favoriteFragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_favoriteFragment_to_editModeFragment"
+            app:destination="@id/editModeFragment"
+            app:popUpTo="@id/favoriteFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <dialog
         android:id="@+id/customDialogFavorite"
@@ -72,6 +90,35 @@
         tools:layout="@layout/fragment_edit" >
         <action
             android:id="@+id/action_editFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_editFragment_to_dialogFolderRename"
+            app:destination="@id/dialogFolderRename"
+            />
+        <action
+            android:id="@+id/action_editFragment_to_editModeFragment"
+            app:destination="@id/editModeFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/dialogFolderRename"
+        android:name="com.project.stockproject.favorite.DialogFolderRename"
+        android:label="fragment_dialog_folder_rename"
+        tools:layout="@layout/fragment_dialog_folder_rename" >
+        <action
+            android:id="@+id/action_dialogFolderRename_to_editFragment"
+            app:destination="@id/editFragment"
+            app:popUpTo="@id/favoriteFragment"
+            app:popUpToInclusive="false"/>
+    </dialog>
+    <fragment
+        android:id="@+id/editModeFragment"
+        android:name="com.project.stockproject.favorite.EditModeFragment"
+        android:label="fragment_edit_mode"
+        tools:layout="@layout/fragment_edit_mode" >
+        <action
+            android:id="@+id/action_editModeFragment_to_favoriteFragment"
             app:destination="@id/favoriteFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false"/>
