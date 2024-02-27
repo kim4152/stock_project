@@ -4,4 +4,6 @@
     <dimen name="popup_height">500dp</dimen>
     <dimen name="popup_width2">300dp</dimen>
     <dimen name="popup_height2">300dp</dimen>
+    <dimen name="marker_width">600dp</dimen>
+    <dimen name="marker_height">500dp</dimen>
 </resources>

@@ -37,6 +37,7 @@
                 android:id="@+id/tabViewPager"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginBottom="?attr/collapsingToolbarLayoutMediumSize"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
 
@@ -75,8 +76,5 @@
         </com.google.android.material.search.SearchView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-
-
 
 </FrameLayout>

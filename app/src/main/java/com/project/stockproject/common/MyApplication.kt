@@ -2,6 +2,7 @@ package com.project.stockproject.common
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 
 object MyApplication : Application() {
@@ -18,5 +19,8 @@ object MyApplication : Application() {
     }
     fun makeToast(string: String){
         Toast.makeText(context,string,Toast.LENGTH_SHORT).show()
+    }
+    fun makeLog(string:String){
+        Log.d("aaabbb",string)
     }
 }

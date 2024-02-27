@@ -10,6 +10,7 @@ import androidx.room.Room
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.project.stockproject.common.GetToken
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.favorite.FavoriteDialogAdapter
 import com.project.stockproject.home.MajorIndexViewPagerDTO
@@ -53,7 +54,23 @@ class MyViewModel : ViewModel() {
     // 네트워크 상태를 외부에 노출
     fun getConnectivityLiveData() = connectivityLiveData
 
-    val retrofit: RetrofitService = RetrofitFactory.retrofit.create(RetrofitService::class.java)
+    private val retrofit: RetrofitService = RetrofitFactory.retrofit.create(RetrofitService::class.java)
+    private val awsRetrofit: RetrofitService = RetrofitFactory.awsRetrofit.create(RetrofitService::class.java)
+    //한국투자증권 토큰 발급
+    fun getToken():LiveData<String>{
+        val liveData : MutableLiveData<String> = MutableLiveData()
+        awsRetrofit.getToken().enqueue(object :Callback<GetToken>{
+            override fun onResponse(call: Call<GetToken>, response: Response<GetToken>) {
+                val result = response.body()?.body?.accessToken
+                liveData.postValue(result)
+            }
+
+            override fun onFailure(call: Call<GetToken>, t: Throwable) {
+                t
+            }
+        })
+        return liveData
+    }
 
     //검색
     private var searchCall: Call<searchResponse>? = null

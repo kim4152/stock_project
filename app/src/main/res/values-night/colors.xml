@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="marker">#407799CC</color>
     <color name = "secondaryContainer">#3C4858</color>
     <color name="md_theme_tertiary">#D7BDE4</color>
     <color name="surface">#1A1C1E</color>

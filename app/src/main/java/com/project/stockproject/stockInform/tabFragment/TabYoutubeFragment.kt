@@ -2,9 +2,7 @@ package com.project.stockproject.stockInform.tabFragment
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,18 +11,15 @@ import android.view.WindowManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
-import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FragmentTabfifthBinding
-import com.project.stockproject.databinding.FragmentTabthirdBinding
 import com.project.stockproject.search.SearchHistoryManager
 import com.project.stockproject.stockInform.StockInformFragment.Companion.STOCKOUTPUT
 import com.project.stockproject.stockInform.StockOutput
 
 
-class TabfifthFragment() : Fragment() {
+class TabYoutubeFragment() : Fragment() {
     val item: StockOutput? = STOCKOUTPUT
     private lateinit var binding: FragmentTabfifthBinding
     private lateinit var viewModel: TabViewModel
@@ -41,16 +36,15 @@ class TabfifthFragment() : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val stockName = item?.let { searchHistoryManager.getStockNameByCode(it.stck_shrn_iscd) }
         val url = "https://www.youtube.com/results?search_query=${stockName}"
         item?.let {
             if (stockName != null) {
                 webViewSet(binding.webView, url)
             }
-        }   //webView
+        }
     }
 
 

@@ -195,11 +195,10 @@ class StockInformFragment : Fragment() {
 
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             when (position) {
-                0 -> tab.text = "기본정보"
-                1 -> tab.text = "차트"
+                0 -> tab.text = "차트"
+                1 -> tab.text = "호가"
                 2 -> tab.text = "종목토론"
-                3 -> tab.text = "뉴스"
-                4 -> tab.text = "유튜브"
+                3 -> tab.text = "유튜브"
             }
         }.attach()
 

@@ -14,6 +14,7 @@ import android.webkit.WebViewClient
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.github.mikephil.charting.data.CandleEntry
 import com.project.stockproject.common.MyApplication.getPackageManager
 import com.project.stockproject.common.MyApplication.startActivity
 import com.project.stockproject.retrofit.RetrofitFactory
@@ -28,15 +29,37 @@ import java.net.URISyntaxException
 
 
 class TabViewModel : ViewModel() {
-    val newsRetrofit: RetrofitService = RetrofitFactory.newsRetrofit.create(RetrofitService::class.java)
+    private val newsRetrofit: RetrofitService = RetrofitFactory.newsRetrofit.create(RetrofitService::class.java)
+    private val kisRetrofit: RetrofitService = RetrofitFactory.stockChartRetrofit.create(RetrofitService::class.java)
 
-    fun getChart(stockCode:String):MutableLiveData<MutableList<CandleDTO>>{
-        var liveData : MutableLiveData<MutableList<CandleDTO>> = MutableLiveData()
-        NaverChart(liveData,1,stockCode).start()
-        return liveData
-    }
+    /////현재 차트 불러오기
 
-    class NaverChart(
+    fun getCurrentChart(stockCode:String,startDate:String,endDate:String):MutableLiveData<MutableList<CurrentChart>>{
+        var liveData : MutableLiveData<MutableList<CurrentChart>> = MutableLiveData()
+        kisRetrofit.getCurrentChart("J",stockCode,startDate,endDate,"D","1").enqueue(object : Callback<GetCurrentChart>{
+            override fun onResponse(call: Call<GetCurrentChart>, response: Response<GetCurrentChart>) {
+                val a =response.body()
+                val tmpList  = mutableListOf<CurrentChart>()
+                response.body()?.output2?.forEach {
+                    tmpList.add(
+                        CurrentChart(
+                            it.stck_bsop_date,
+                            PriceDTO(it.stck_clpr.toFloat(),it.stck_oprc.toFloat(),it.stck_hgpr.toFloat(),it.stck_lwpr.toFloat(),it.acml_vol,it.prdy_vrss_sign,it.prdy_vrss),
+                            CurrentAdditional(it.acml_vol,it.prdy_vrss_sign,it.prdy_vrss)
+                        )
+                    )
+                }
+                liveData.postValue(tmpList)
+            }
+
+            override fun onFailure(call: Call<GetCurrentChart>, t: Throwable) {
+                val a = t
+            }
+            })
+            return liveData
+        }
+
+    /*class NaverChart(
         private val liveData: MutableLiveData<MutableList<CandleDTO>> = MutableLiveData(),
         private var getPage: Int,
         private val code: String,
@@ -82,7 +105,7 @@ class TabViewModel : ViewModel() {
             }
             liveData.postValue(candleDTO)
         }
-    }
+    }*/
     ///////////////////////////////////////////////////////////////////////////
     fun getNews(stockName:String):MutableLiveData<List<NewsModel>>{
         var liveData:MutableLiveData<List<NewsModel>> = MutableLiveData()

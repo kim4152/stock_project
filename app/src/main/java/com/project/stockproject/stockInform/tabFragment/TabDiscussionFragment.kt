@@ -9,19 +9,13 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.appcompat.app.ActionBar
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import com.project.stockproject.MyViewModel
-import com.project.stockproject.R
 import com.project.stockproject.databinding.FragmentTabthirdBinding
 import com.project.stockproject.stockInform.StockInformFragment.Companion.STOCKOUTPUT
-import com.project.stockproject.stockInform.StockOutput
 
 
-
-
-class TabthirdFragment: Fragment() {
+class TabDiscussionFragment: Fragment() {
     private lateinit var binding: FragmentTabthirdBinding
 
     private lateinit var viewModel:TabViewModel

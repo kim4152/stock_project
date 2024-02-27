@@ -31,6 +31,7 @@ import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.ActivityMainBinding
 import com.project.stockproject.favorite.EditFragment
 import com.project.stockproject.home.HomeFragment
+import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.search.SearchAdapter
 import com.project.stockproject.search.SearchHistory
 import com.project.stockproject.search.SearchHistoryManager
@@ -46,13 +47,11 @@ class MainActivity : AppCompatActivity()  {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("adfdsf","0:onCreate")
         MyApplication.onCreate1(applicationContext)//전역 Context 설정
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         showAni(isInternetConnected())//처음 앱  켰을 떄 인터넷 확인
         networkChecking() //네트워크 변화 상태 학인
-
         // NavController 초기화
          navController = findNavController(R.id.mainFrame)
 
@@ -64,7 +63,7 @@ class MainActivity : AppCompatActivity()  {
        // setBottomNavigation(bottomNav)//바텀 네비게이션
         searchManager= SearchHistoryManager(MyApplication.getAppContext())
         viewModel = ViewModelProviders.of(this)[MyViewModel::class.java] //viewModel 정의
-
+        getToken() //한국투자증권 토큰 발급
 
     }
 
@@ -75,6 +74,16 @@ class MainActivity : AppCompatActivity()  {
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
+    }
+    private fun getToken(){
+        viewModel.getToken().observe(this, Observer {
+            if (it.isNullOrEmpty()){
+                MyApplication.makeToast("현재 발급받은 토큰이 없습니다")
+            }else{
+                RetrofitFactory.TOKEN =it
+            }
+
+        })
     }
 
     //초기 네트워크 상태 확인

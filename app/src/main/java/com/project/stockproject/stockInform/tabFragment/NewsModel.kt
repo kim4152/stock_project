@@ -1,5 +1,6 @@
 package com.project.stockproject.stockInform.tabFragment
 
+import com.github.mikephil.charting.data.CandleEntry
 import com.tickaroo.tikxml.annotation.Element
 import com.tickaroo.tikxml.annotation.PropertyElement
 import com.tickaroo.tikxml.annotation.Xml
@@ -38,6 +39,8 @@ data class NewsItem(
     val date :String?=null,
 
     )
+
+
 
 fun List<NewsItem>.transform() : List<NewsModel>{
     return this.map {
