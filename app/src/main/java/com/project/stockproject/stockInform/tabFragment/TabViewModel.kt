@@ -36,7 +36,7 @@ class TabViewModel : ViewModel() {
 
     fun getCurrentChart(stockCode:String,startDate:String,endDate:String):MutableLiveData<MutableList<CurrentChart>>{
         var liveData : MutableLiveData<MutableList<CurrentChart>> = MutableLiveData()
-        kisRetrofit.getCurrentChart("J",stockCode,startDate,endDate,"D","1").enqueue(object : Callback<GetCurrentChart>{
+        kisRetrofit.getCurrentChart("J",stockCode,"0",endDate,"M","1").enqueue(object : Callback<GetCurrentChart>{
             override fun onResponse(call: Call<GetCurrentChart>, response: Response<GetCurrentChart>) {
                 val a =response.body()
                 val tmpList  = mutableListOf<CurrentChart>()

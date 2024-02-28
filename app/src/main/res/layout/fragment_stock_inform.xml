@@ -13,13 +13,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_marginTop="?attr/actionBarSize"
             tools:context=".stockInform.StockinformActivity">
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/stockInforViewPager"
+                android:layout_marginTop="25dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
@@ -37,7 +37,6 @@
                 android:id="@+id/tabViewPager"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginBottom="?attr/collapsingToolbarLayoutMediumSize"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
 

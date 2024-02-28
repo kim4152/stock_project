@@ -1,8 +1,8 @@
 package com.project.stockproject.stockInform.tabFragment
 
-import android.content.Context
-import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,13 +10,14 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.CombinedChart
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LegendEntry
-import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -34,10 +35,9 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.renderer.CandleStickChartRenderer
 import com.project.stockproject.R
-import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FragmentTabsecondBinding
-import com.project.stockproject.databinding.MarkerViewBinding
 import com.project.stockproject.stockInform.StockInformFragment.Companion.STOCKOUTPUT
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -53,6 +53,7 @@ class TabChartFragment : Fragment() {
     private var additionalList = mutableListOf<CurrentAdditional>()
 
     private lateinit var combinedChart: CombinedChart
+    private lateinit var barChart: BarChart
     private lateinit var binding: FragmentTabsecondBinding
     private lateinit var viewModel: TabViewModel
 
@@ -64,6 +65,7 @@ class TabChartFragment : Fragment() {
         binding = FragmentTabsecondBinding.inflate(layoutInflater, container, false)
         viewModel = ViewModelProviders.of(this)[TabViewModel::class.java]
         combinedChart = binding.combinedChart
+        barChart = binding.barChart
         return binding.root
     }
 
@@ -122,12 +124,6 @@ class TabChartFragment : Fragment() {
     private fun setChart(candleEntryList: MutableList<CandleEntry>) {
         //combinedChart.onChartGestureListener=MyOnChartGestureListener()//차트 제스처 이벤트
 
-        makeAxis(combinedChart) //축 설정
-        setLegend(combinedChart.legend)// 범례 설정
-        eventSetting()  //차트 이벤트 설정
-
-
-
         // 이동평균선 데이터 생성
         val maEntries = calculateMovingAverage(candleEntryList, 5) // 예: 5일 이동평균선
         val maDataSet = LineDataSet(maEntries, "5").apply {
@@ -139,7 +135,6 @@ class TabChartFragment : Fragment() {
         //캔들 모양
         val candleDataSet = CandleDataSet(candleEntryList, "Candle Data").apply {
             decreasingColor = Color.BLUE
-
             increasingColor = Color.RED
             shadowColor = Color.GRAY
             shadowWidth = 1.0f
@@ -147,39 +142,135 @@ class TabChartFragment : Fragment() {
             increasingPaintStyle = android.graphics.Paint.Style.FILL
             neutralColor = Color.BLACK
             setDrawValues(false)
-
         }
-
-        //거래량 막대그래프
-
-        val barDataSet = BarDataSet(barEntryList,"volList")
-
 
         // CombinedData에 데이터셋 추가
         val combinedData = CombinedData().apply {
             setData(LineData(maDataSet))        //이동평균선
             setData(CandleData(candleDataSet))  //캔들
-            setData(BarData(barDataSet))
         }
-
         // CombinedChart에 데이터 설정
         combinedChart.data = combinedData
-        combinedChart.invalidate() // 차트 업데이트
 
+        setBarchart()
+
+        makeAxis() //축 설정
+        setLegend(combinedChart.legend)// 범례 설정
+        eventSetting()  //차트 이벤트 설정
+
+
+
+        combinedChart.invalidate() // 차트 업데이트
+    }
+    //거래량 막대 그래프
+    private fun setBarchart(){
+        var previousYValue: Float = 0f
+        val barDataSet = BarDataSet(barEntryList,"거래량").apply {
+            setDrawValues(false)
+            setDrawIcons(false)
+            colors=barEntryList.map {entry->
+                if (entry.y > previousYValue) {
+                    Color.RED   // 현재 x축의 y값이 더 크면 빨강색
+                } else {
+                    Color.BLUE  // 현재 x축의 y값이 작거나 같으면 파랑색
+                }.also {
+                    previousYValue = entry.y  // 이전 값 업데이트
+                }
+            }
+        }
+
+
+        makeBarAxis(barChart)
+        barEvent()
+
+        //legend 안나오게 하기
+        val i = barChart.legend
+        i.isEnabled=false
+
+
+        barChart.data =BarData(barDataSet)
+        barChart.invalidate()
+    }
+    private fun barEvent(){
+        barChart.setOnClickListener { barChart.highlightValue(null) }
+        barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener{
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                Log.d("asdfdf","selec")
+            }
+
+            override fun onNothingSelected() {
+                barChart.highlightValue(null)
+                Log.d("asdfdf","no")
+            }
+
+        })
+
+
+        barChart.setVisibleXRangeMinimum(8f) //x축 확대 제한
+
+        barChart.isScaleYEnabled=false
+        barChart.isScaleXEnabled=false
+        barChart.isDragEnabled=false
 
     }
+    private fun makeBarAxis(barChart:BarChart){
+        barChart.apply {
+            isHighlightPerDragEnabled = true
+            description.text = ""
+
+
+            // X축 이동 및 확대/축소 활성화
+            setPinchZoom(true)  //손가락으로 확대 축소 가능
+            isDragYEnabled=false    //y축 드래그 X
+            isScaleYEnabled=false   //y축 확대 축소x
+            isAutoScaleMinMaxEnabled=true //y축 값 자동 조정
+
+        }
+        //왼쪽 축 설정
+        barChart.axisLeft.apply {
+            setDrawGridLines(false)
+            setDrawLabels(false)
+            setDrawAxisLine(false)
+        }
+        //오른 쪽 축
+        barChart.axisRight.apply {
+            setDrawGridLines(false)
+            setDrawLabels(true)
+            textColor=Color.TRANSPARENT
+            setDrawAxisLine(false)
+        }
+        //부모뷰 가로채기x
+        barChart.requestDisallowInterceptTouchEvent(true)
+        //x축
+        barChart.xAxis.apply {
+            setDrawGridLines(false)
+            setDrawLabels(false)
+            labelCount = candleEntryList.size
+            textColor = Color.BLACK
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            isGranularityEnabled = true
+            setAvoidFirstLastClipping(true)
+            //x축 최솟값,최댓값
+            axisMinimum = -0.5f
+            axisMaximum = (candleEntryList.size+1.5).toFloat()
+
+            //x축을 날짜 형식으로
+            valueFormatter = DateAxisValueFormatter()
+        }
+    }
+
 
     //축 설정
-    private fun makeAxis(combinedChart: CombinedChart) {
+    private fun makeAxis() {
         //차트 초기 설정
         combinedChart.apply {
             isHighlightPerDragEnabled = true
-            //setBorderColor()
             description.text = ""
-//            setVisibleXRange(1f,2f)
 
 
-// X축 이동 및 확대/축소 활성화
+
+            // X축 이동 및 확대/축소 활성화
             setPinchZoom(true)  //손가락으로 확대 축소 가능
             isDragYEnabled=false    //y축 드래그 X
             isScaleYEnabled=false   //y축 확대 축소x
@@ -216,6 +307,8 @@ class TabChartFragment : Fragment() {
 
             //x축을 날짜 형식으로
             valueFormatter = DateAxisValueFormatter()
+
+
         }
 
     }
@@ -224,6 +317,13 @@ class TabChartFragment : Fragment() {
     private fun setLegend(legend: Legend) {
         legend.form = Legend.LegendForm.LINE // 범례 모양 설정
         legend.textColor = Color.BLACK // 범례 텍스트 색상 설정
+
+        legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+        legend.orientation = Legend.LegendOrientation.VERTICAL
+        legend.setDrawInside(true) // 차트 안에 범례를 그리지 않음
+        legend.xOffset = 10f // 우측으로의 오프셋
+        legend.yOffset = 10f // 상단으로의 오프셋
 
         // 범례 항목 추가
         val legendEntries = arrayOf(
@@ -254,7 +354,6 @@ class TabChartFragment : Fragment() {
     private fun eventSetting(){
         combinedChart.apply {
             setVisibleXRangeMinimum(8f) //x축 확대 제한
-//invalidate()
 
             //클릭으로 highlight나오지 않게
             setOnClickListener { highlightValue(null) }
@@ -288,8 +387,15 @@ class TabChartFragment : Fragment() {
                 }
 
                 override fun onChartLongPressed(me: MotionEvent?) {
-                    val h = combinedChart.getHighlightByTouchPoint(me?.x ?: 0f, me?.y ?: 0f)
-                    combinedChart.highlightValue(h, true)
+                    val highlight = combinedChart.getHighlightByTouchPoint(me?.x ?: 0f, me?.y ?: 0f)
+                    combinedChart.highlightValue(highlight, true)
+                    // 거래량차트도 highlight
+                    barChart.highlightValues(arrayOf(highlight))
+                    ////////////////////////////////////////////
+
+
+
+
                 }
 
                 override fun onChartDoubleTapped(me: MotionEvent?) {
@@ -310,66 +416,50 @@ class TabChartFragment : Fragment() {
                 }
 
                 override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {
-
+                    barChart.zoom(scaleX, 1f, 0f, 0f)
+                    val sharedMatrix = Matrix()
+                    // CombinedChart와 BarChart의 ViewPortHandler 비율 동기화
+                    syncViewPortHandler(combinedChart, barChart, sharedMatrix)
                 }
 
                 override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
+                    // 이동 적용할 Matrix 객체 생성
+                    val matrix = Matrix()
 
+                    // 이동 적용
+                    matrix.postTranslate(dX, 0f)
+
+                    // CombinedChart와 BarChart의 ViewPortHandler 비율 동기화
+                    syncViewPortHandler(combinedChart, barChart, matrix)
+/*
+                    // Matrix를 CombinedChart에 적용
+                    combinedChart.viewPortHandler.refresh(matrix, combinedChart, true)
+
+                    // Matrix를 BarChart에 적용
+                    barChart.viewPortHandler.refresh(matrix, barChart, true)
+
+                    // CombinedChart와 BarChart 갱신
+                    combinedChart.notifyDataSetChanged()
+                    barChart.notifyDataSetChanged()
+
+                    // 화면 갱신
+                    combinedChart.invalidate()
+                    barChart.invalidate()*/
                 }
 
             }
 
         }
     }
+    //주가차트&거래량차트 확대/축소/이동 동기화
+    private fun syncViewPortHandler(sourceChart: BarLineChartBase<*>, targetChart: BarLineChartBase<*>, matrix: Matrix) {
+        // sourceChart의 변환 정보를 가져와서 matrix에 설정
+        matrix.set(sourceChart.viewPortHandler.matrixTouch)
 
+        // targetChart에 matrix를 적용하여 ViewPortHandler를 설정
+        targetChart.viewPortHandler.refresh(matrix, targetChart, true)
+    }
 
-    //차트 확대/축소 이벤트
-    /*inner class MyOnChartGestureListener : OnChartGestureListener {
-        override fun onChartGestureStart(me: MotionEvent?, lastPerformedGesture: ChartTouchListener.ChartGesture?) {
-            // 확대/축소 제스처 시작 시 실행되는 코드
-
-        }
-
-        override fun onChartGestureEnd(me: MotionEvent?, lastPerformedGesture: ChartTouchListener.ChartGesture?) {
-            // 확대/축소 제스처 종료 시 실행되는 코드
-        }
-
-        override fun onChartLongPressed(me: MotionEvent?) {
-
-        }
-
-        override fun onChartDoubleTapped(me: MotionEvent?) {
-
-        }
-
-        override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {
-            //최대로 확대하면 차트 더 보여주기
-            if (scaleY<=1.0f && scaleX<=1.0f) {
-                Thread.sleep(500)
-                getMore()
-            }
-        }
-
-        override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
-
-        }
-
-        override fun onChartSingleTapped(me: MotionEvent?) {
-            // 차트를 단일 터치했을 때 실행되는 코드
-        }
-
-        override fun onChartFling(
-            me1: MotionEvent?,
-            me2: MotionEvent?,
-            velocityX: Float,
-            velocityY: Float
-        ) {
-
-        }
-
-        // 나머지 메서드들은 필요에 따라 구현할 수 있습니다.
-        // onChartLongPressed, onChartDoubleTapped, onChartFling 등이 있습니다.
-    }*/
 
     //x축 label 설정
     inner class DateAxisValueFormatter() : IndexAxisValueFormatter() {

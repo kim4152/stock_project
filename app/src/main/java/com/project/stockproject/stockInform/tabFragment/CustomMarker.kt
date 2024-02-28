@@ -67,35 +67,35 @@ class CustomMarker(context: Context, layoutResource: Int,val combinedChart: Comb
         val b =beforeList.priceDTO.stckClpr.toInt()
         val percentage=calculatePercentageDifference(a,b)
         setColor(percentage,"endPrice")
-       return "${df.format(a)}(${percentage})"
+       return "${df.format(a)}(${percentage}%)"
     }
     private fun setOpenPrice():String{
         val a =totalList.priceDTO.stckOprc.toInt()
         val b =beforeList.priceDTO.stckOprc.toInt()
         val percentage=calculatePercentageDifference(a,b)
         setColor(percentage,"openPrice")
-        return "${df.format(a)}(${percentage})"
+        return "${df.format(a)}(${percentage}%)"
     }
     private fun setHighPrice():String{
         val a =totalList.priceDTO.stckHgpr.toInt()
         val b =beforeList.priceDTO.stckHgpr.toInt()
         val percentage=calculatePercentageDifference(a,b)
         setColor(percentage,"highPrice")
-        return "${df.format(a)}(${percentage})"
+        return "${df.format(a)}(${percentage}%)"
     }
     private fun setLowPrice():String{
         val a =totalList.priceDTO.stckLwpr.toInt()
         val b =beforeList.priceDTO.stckLwpr.toInt()
         val percentage=calculatePercentageDifference(a,b)
         setColor(percentage,"lowPrice")
-        return "${df.format(a)}(${percentage})"
+        return "${df.format(a)}(${percentage}%)"
     }
     private fun setVol():String{
         val a =totalList.priceDTO.acmlVol.toInt()
         val b =beforeList.priceDTO.acmlVol.toInt()
         val percentage=calculatePercentageDifference(a,b)
         setColor(percentage,"vol")
-        return "${df.format(a)}(${percentage})"
+        return "${df.format(a)}(${percentage}%)"
     }
     //천자리 , 찍기
     private val df = DecimalFormat("#,###")
