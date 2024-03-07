@@ -6,8 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.project.stockproject.favorite.EditItem
-import com.project.stockproject.stockInform.tabFragment.NewsItem
-import com.project.stockproject.stockInform.tabFragment.NewsModel
 
 @Entity(
     tableName = "folder",

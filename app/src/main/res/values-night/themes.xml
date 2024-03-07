@@ -32,11 +32,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
     </style>
 
-    <style name="bottomNavigation" parent="AppTheme">
-        <item name="android:textSize">5sp</item>
-        <item name="iconSize">5sp</item>
-        <item name="drawableSize">5sp</item>
-    </style>
+
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="naver_color">#03C75A</color>
+    <color name="youtube_color">#FF0000</color>
     <color name="marker">#407799CC</color>
     <color name = "secondaryContainer">#3C4858</color>
     <color name="md_theme_tertiary">#D7BDE4</color>

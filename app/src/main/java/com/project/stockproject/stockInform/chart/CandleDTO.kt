@@ -1,6 +1,4 @@
-package com.project.stockproject.stockInform.tabFragment
-
-import com.github.mikephil.charting.data.CandleEntry
+package com.project.stockproject.stockInform.chart
 
 
 data class Chart(

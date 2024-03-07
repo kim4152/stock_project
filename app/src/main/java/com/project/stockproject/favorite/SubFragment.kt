@@ -47,11 +47,11 @@ class SubFragment(private val folderTable: FolderTable):Fragment() {
             },
             subOnClick = { click ->
                 val bundle =
-                    bundleOf("stockCode" to click.stockCode, "stockName" to click.stockName)
+                    bundleOf("stockCode" to click.stockCode, "stockName" to click.stockName
+                    ,"folderName" to folderTable.folderName)
                 findNavController().navigate(
                     R.id.action_favoriteFragment_to_stockInformFragment, bundle
                 )
-                //sharedPreferences.setPosition("viewPager", binding.viewPager.currentItem)
             },
         )
         binding.recyclerView.apply {

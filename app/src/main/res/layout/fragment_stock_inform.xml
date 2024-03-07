@@ -9,39 +9,157 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
             tools:context=".stockInform.StockinformActivity">
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/stockInforViewPager"
-                android:layout_marginTop="25dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
                 app:layout_constraintTop_toTopOf="parent" />
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
+            <com.github.mikephil.charting.charts.CombinedChart
+                android:id="@+id/combinedChart"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/stockInforViewPager"
+                android:layout_margin="7dp"
+                />
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/inform"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/stockInforViewPager"
-                app:tabGravity="fill"
-                app:tabMode="fixed"
-                android:layout_alignParentBottom="true"/>
+                android:layout_margin="7dp"
+                app:layout_constraintTop_toBottomOf="@id/combinedChart">
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="투자정보"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+                <TextView
+                    android:id="@+id/avls1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="시가 총액"
+                    app:layout_constraintTop_toBottomOf="@id/title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="10dp"/>
+                <TextView
+                    android:id="@+id/avls2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/title"
+                    app:layout_constraintStart_toEndOf="@id/avls1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="end"
+                    android:layout_marginTop="10dp"/>
+                ////////////////////////////////
+                <TextView
+                    android:id="@+id/pbr1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PBR"
+                    app:layout_constraintTop_toBottomOf="@id/avls1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="10dp"/>
+                <TextView
+                    android:id="@+id/pbr2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/avls1"
+                    app:layout_constraintStart_toEndOf="@id/pbr1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="end"
+                    android:layout_marginTop="10dp"/>
+                ////////////////////////////////
+                <TextView
+                    android:id="@+id/per1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PER"
+                    app:layout_constraintTop_toBottomOf="@id/pbr2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="10dp"/>
+                <TextView
+                    android:id="@+id/per2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/pbr2"
+                    app:layout_constraintStart_toEndOf="@id/per1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="end"
+                    android:layout_marginTop="10dp"/>
+                ////////////////////////////////
+                <TextView
+                    android:id="@+id/eps1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EPS"
+                    app:layout_constraintTop_toBottomOf="@id/per2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="10dp"/>
+                <TextView
+                    android:id="@+id/eps2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/per2"
+                    app:layout_constraintStart_toEndOf="@id/eps1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="end"
+                    android:layout_marginTop="10dp"/>
+                ///////////////////
+                <TextView
+                    android:id="@+id/bps1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BPS"
+                    app:layout_constraintTop_toBottomOf="@id/eps1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="10dp"/>
+                <TextView
+                    android:id="@+id/bps2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/bps1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="end"
+                    app:layout_constraintTop_toBottomOf="@id/eps1"
+                    android:layout_marginTop="10dp"/>
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/tabViewPager"
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stock_discussion"
+                android:text="종목토론"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/inform"
+                android:layout_margin="7dp"
+                app:strokeColor="@color/naver_color"
+                app:strokeWidth="1dp"
+                android:backgroundTint="@color/transparent"
+                android:textColor="@color/naver_color"
+                android:textStyle="bold"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
@@ -53,8 +171,7 @@
                 android:elevation="6dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="종목 검색"
-                />
+                android:hint="종목 검색" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <com.google.android.material.search.SearchView

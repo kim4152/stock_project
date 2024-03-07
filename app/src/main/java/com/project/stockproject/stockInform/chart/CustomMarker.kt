@@ -1,10 +1,8 @@
-package com.project.stockproject.stockInform.tabFragment
+package com.project.stockproject.stockInform.chart
 
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.MarkerView
@@ -19,23 +17,31 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.math.round
 
-class CustomMarker(context: Context, layoutResource: Int,val combinedChart: CombinedChart) : MarkerView(context, layoutResource) {
+class CustomMarker(context: Context, layoutResource: Int) : MarkerView(context, layoutResource) {
 
     private val binding: MarkerViewBinding =
         MarkerViewBinding.inflate(LayoutInflater.from(context), this, true)
-    private lateinit var totalList:CurrentChart
-    private lateinit var beforeList:CurrentChart
+    private lateinit var totalList: CurrentChart
+    private lateinit var beforeList: CurrentChart
 
-    fun setData(list: List<CurrentChart>,pos:Int) {
-        totalList = list[pos]
-        if (pos>1){beforeList=list[pos-1]}else{beforeList=list[0]}
-        binding.date.text=setDate()
-        binding.endPrice2.text=setEndPrice()
-        binding.openPrice2.text=setOpenPrice()
-        binding.highPrice2.text=setHighPrice()
-        binding.lowPrice2.text=setLowPrice()
-        binding.vol2.text=setVol()
+    fun setData(list: List<CurrentChart>, markerList:List<Float> ,pos:Int) {
+        try{
+            totalList = list[pos]
+            if (pos>1){beforeList=list[pos-1]}else{beforeList=list[0]}
+            binding.date.text=setDate()
+            binding.endPrice2.text=setEndPrice()
+            binding.openPrice2.text=setOpenPrice()
+            binding.highPrice2.text=setHighPrice()
+            binding.lowPrice2.text=setLowPrice()
+            binding.vol2.text=setVol()
+            binding.prediction2.text=setPredic(markerList,pos)
+        }catch (e:Exception){
+        }
+
     }
+
+
+
     override fun refreshContent(entry: Entry?, highlight: Highlight?) {
         super.refreshContent(entry, highlight)
     }
@@ -48,7 +54,6 @@ class CustomMarker(context: Context, layoutResource: Int,val combinedChart: Comb
 
     override fun getOffsetForDrawingAtPoint(posX: Float, posY: Float): MPPointF {
         //val xOffset = if (posX < width) -(getWidth() / 2f) else getWidth() / 2f
-        Log.d("aaaccc","posX:${posX},width:${width}")
         if (posX>width){
             // 왼쪽에 표시
             return MPPointF(-width.toFloat()-20, -posY+20)
@@ -71,21 +76,21 @@ class CustomMarker(context: Context, layoutResource: Int,val combinedChart: Comb
     }
     private fun setOpenPrice():String{
         val a =totalList.priceDTO.stckOprc.toInt()
-        val b =beforeList.priceDTO.stckOprc.toInt()
+        val b =beforeList.priceDTO.stckClpr.toInt()
         val percentage=calculatePercentageDifference(a,b)
         setColor(percentage,"openPrice")
         return "${df.format(a)}(${percentage}%)"
     }
     private fun setHighPrice():String{
         val a =totalList.priceDTO.stckHgpr.toInt()
-        val b =beforeList.priceDTO.stckHgpr.toInt()
+        val b =totalList.priceDTO.stckOprc.toInt()
         val percentage=calculatePercentageDifference(a,b)
         setColor(percentage,"highPrice")
         return "${df.format(a)}(${percentage}%)"
     }
     private fun setLowPrice():String{
         val a =totalList.priceDTO.stckLwpr.toInt()
-        val b =beforeList.priceDTO.stckLwpr.toInt()
+        val b =totalList.priceDTO.stckOprc.toInt()
         val percentage=calculatePercentageDifference(a,b)
         setColor(percentage,"lowPrice")
         return "${df.format(a)}(${percentage}%)"
@@ -106,6 +111,19 @@ class CustomMarker(context: Context, layoutResource: Int,val combinedChart: Comb
         val date: Date = inputFormat.parse(inputDate) ?: Date()
         return outputFormat.format(date)
     }
+
+    private fun setPredic(list:List<Float>,pos:Int): String{
+        val predicCurrent= list[pos].toInt()
+        val b =totalList.priceDTO.stckClpr.toInt()
+        if (list.isNullOrEmpty()){
+            return ""
+        }else{
+            val percentage=calculatePercentageDifference(predicCurrent,b)
+            setColor(percentage,"predic")
+            return "${df.format(predicCurrent)}(${percentage}%)"
+        }
+    }
+
     //두 가격차이 백분율
     private fun calculatePercentageDifference(a: Int, b: Int): Double {
         if (a == 0 && b == 0) {
@@ -178,6 +196,19 @@ class CustomMarker(context: Context, layoutResource: Int,val combinedChart: Comb
                     )
                 }else if(percentage<0.0){
                     binding.vol2.setTextColor(
+                        ContextCompat.getColor
+                            (MyApplication.getAppContext(), R.color.down)
+                    )
+                }
+            }
+            "predic"->{
+                if (percentage>0.0){
+                    binding.prediction2.setTextColor(
+                        ContextCompat.getColor
+                            (MyApplication.getAppContext(), R.color.up)
+                    )
+                }else if(percentage<0.0){
+                    binding.prediction2.setTextColor(
                         ContextCompat.getColor
                             (MyApplication.getAppContext(), R.color.down)
                     )

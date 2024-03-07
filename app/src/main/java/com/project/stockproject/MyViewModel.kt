@@ -22,17 +22,19 @@ import com.project.stockproject.room.FavoriteDB.Companion.MIGRATION_3_4
 import com.project.stockproject.room.FolderDAO
 import com.project.stockproject.room.FolderTable
 import com.project.stockproject.room.ItemTable
+import com.project.stockproject.search.AwsAPIStockInfo
 import com.project.stockproject.search.HistoryManager
 import com.project.stockproject.search.Search
-import com.project.stockproject.search.SearchHistoryManager
-import com.project.stockproject.search.StockItem
-import com.project.stockproject.search.searchResponse
+
 import com.project.stockproject.stockInform.StockInformItem
 import com.project.stockproject.stockInform.StockInformViewPagerAdapter
+import com.project.stockproject.stockInform.StockList
 import com.project.stockproject.stockInform.StockOutput
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,8 +44,6 @@ import kotlin.math.abs
 
 class MyViewModel : ViewModel() {
     companion object {
-        private const val SERVICE_KEY =
-            "9mMQezrKc2Qs061fZUnuMUTboZG85RptSH7RdZUS4jCe7fKxxALDPO0oNePEjJ4TGV9hj6Bo7Ce6ylMhxUr1fw=="
         lateinit var getSearchOnclick: Search
     }
 
@@ -54,12 +54,15 @@ class MyViewModel : ViewModel() {
     // 네트워크 상태를 외부에 노출
     fun getConnectivityLiveData() = connectivityLiveData
 
-    private val retrofit: RetrofitService = RetrofitFactory.retrofit.create(RetrofitService::class.java)
-    private val awsRetrofit: RetrofitService = RetrofitFactory.awsRetrofit.create(RetrofitService::class.java)
+    private val retrofit: RetrofitService =
+        RetrofitFactory.retrofit.create(RetrofitService::class.java)
+    private val awsAPIRetrofit: RetrofitService =
+        RetrofitFactory.awsAPIRetrofit.create(RetrofitService::class.java)
+
     //한국투자증권 토큰 발급
-    fun getToken():LiveData<String>{
-        val liveData : MutableLiveData<String> = MutableLiveData()
-        awsRetrofit.getToken().enqueue(object :Callback<GetToken>{
+    fun getToken(): LiveData<String> {
+        val liveData: MutableLiveData<String> = MutableLiveData()
+        awsAPIRetrofit.getToken().enqueue(object : Callback<GetToken> {
             override fun onResponse(call: Call<GetToken>, response: Response<GetToken>) {
                 val result = response.body()?.body?.accessToken
                 liveData.postValue(result)
@@ -73,24 +76,25 @@ class MyViewModel : ViewModel() {
     }
 
     //검색
-    private var searchCall: Call<searchResponse>? = null
-    fun search(s: String): MutableLiveData<List<StockItem>> {
+    private var searchCall: Call<List<AwsAPIStockInfo>>? = null
+    fun search(stockName: String): MutableLiveData<List<AwsAPIStockInfo>> {
 
-        var liveData: MutableLiveData<List<StockItem>> = MutableLiveData()
-        searchCall = retrofit.search(SERVICE_KEY, "json", "10", s)
+        var liveData: MutableLiveData<List<AwsAPIStockInfo>> = MutableLiveData()
+        searchCall = awsAPIRetrofit.search1(stockName)
 
-        searchCall?.enqueue(object : Callback<searchResponse> {
+        searchCall?.enqueue(object : Callback<List<AwsAPIStockInfo>>{
             override fun onResponse(
-                call: Call<searchResponse>,
-                response: retrofit2.Response<searchResponse>
+                call: Call<List<AwsAPIStockInfo>>,
+                response: Response<List<AwsAPIStockInfo>>
             ) {
-                liveData.postValue(response.body()?.response?.body?.items?.item)
+                liveData.postValue(response.body())
             }
 
-            override fun onFailure(call: Call<searchResponse>, t: Throwable) {
+            override fun onFailure(call: Call<List<AwsAPIStockInfo>>, t: Throwable) {
             }
 
         })
+
         return liveData
     }
 
@@ -179,61 +183,47 @@ class MyViewModel : ViewModel() {
     }
 
     //종목정보 기본조회
-    val stockInformRetrofit: RetrofitService =
+    private val stockInformRetrofit: RetrofitService =
         RetrofitFactory.stockInfromRetrofit.create(RetrofitService::class.java)
-    lateinit var viewPager2: ViewPager2
-    lateinit var searchHistorylist: List<HistoryManager>
 
-    //lateinit var searchHistoryManager:SearchHistoryManager
-    fun stockInformRetrofit(
-        searchHistorylist1: List<HistoryManager>,
-        viewPager: ViewPager2,
-        pagerAdapter: StockInformViewPagerAdapter
-    ) {
-        viewPager2 = viewPager
-        searchHistorylist = searchHistorylist1
-        // majorIndexViewPager(viewPager2)
-        runBlocking {
-            searchHistorylist.forEachIndexed { index, historyManager ->
-                if (index == 0) return@forEachIndexed
-                processStockInform(historyManager.stockCode, index, pagerAdapter)
+    fun stockInformRetrofit(stockList: List<StockList>, ):MutableLiveData<List<StockOutput>> {
+        val responseList = MutableLiveData<List<StockOutput>>()
+        val tmpList = mutableListOf<StockOutput>()
+        Thread{
+            runBlocking {
+                stockList.forEach { it ->
+                    try {
+                        val response = withContext(Dispatchers.IO) {
+                            stockInformRetrofit.stockInform("J", it.stockCode).execute()
+                        }
 
-            }
-        }
-    }
+                        if (response.isSuccessful) {
+                            val a = response.body()?.output
+                            if (a != null) {
+                                tmpList.add(a)
+                            }
+                        } else {
+                        }
+                    } catch (e: Exception) {
 
-    val getList: MutableList<StockOutput> = mutableListOf()
-    private fun processStockInform(
-        stockCode: String,
-        index: Int,
-        pagerAdapter: StockInformViewPagerAdapter
-    ) {
-        stockInformRetrofit.stockInform("J", stockCode)
-            .enqueue(object : Callback<StockInformItem> {
-                override fun onResponse(
-                    call: Call<StockInformItem>,
-                    response: Response<StockInformItem>
-                ) {
-
-                    response.body()?.output?.let {
-                        pagerAdapter.addItem(it)
-                        getList.add(it)
-                        viewPager2.offscreenPageLimit = index + 1
                     }
                 }
-                override fun onFailure(call: Call<StockInformItem>, t: Throwable) {
-                }
-            })
+                responseList.postValue(tmpList)
+            }
+        }.start()
+        return responseList
     }
+
+
     //개별종목보회
-    fun stockInform(stockCode: String):MutableLiveData<StockOutput>{
-        val liveData:MutableLiveData<StockOutput> = MutableLiveData()
-        stockInformRetrofit.stockInform("J",stockCode).enqueue(object :Callback<StockInformItem>{
+    fun stockInform(stockCode: String): MutableLiveData<StockOutput> {
+        val liveData: MutableLiveData<StockOutput> = MutableLiveData()
+        stockInformRetrofit.stockInform("J", stockCode).enqueue(object : Callback<StockInformItem> {
             override fun onResponse(
                 call: Call<StockInformItem>,
                 response: Response<StockInformItem>
             ) {
-               liveData.postValue(response.body()?.output)
+                liveData.postValue(response.body()?.output)
             }
 
             override fun onFailure(call: Call<StockInformItem>, t: Throwable) {
@@ -241,10 +231,6 @@ class MyViewModel : ViewModel() {
 
         })
         return liveData
-    }
-
-    fun singleViewPager(stockCode: String, pagerAdapter: StockInformViewPagerAdapter) {
-        processStockInform(stockCode, 0, pagerAdapter)
     }
 
     //tabLayout처음 그리기
@@ -267,21 +253,22 @@ class MyViewModel : ViewModel() {
 ///////////////////////////////////////////////////////////////////////////
     //즐겨찾기 폴더 추가
 
-    private val db = Room.databaseBuilder(MyApplication.getAppContext(),FavoriteDB::class.java,"favorite7")
-        //.addMigrations(MIGRATION_3_4)
-        .build()
+    private val db =
+        Room.databaseBuilder(MyApplication.getAppContext(), FavoriteDB::class.java, "favorite7")
+            //.addMigrations(MIGRATION_3_4)
+            .build()
 
     private val _addFolderResult = MutableLiveData<String>()
-    val addFolderResult : LiveData<String> get() = _addFolderResult
+    val addFolderResult: LiveData<String> get() = _addFolderResult
     fun addFolder(order: Int, folderName: String, context: Context) {
-        Thread{
-            var index =db.folderDAO().getMaxOrder()
-            if (index==null){
-                index=0
-            }else{
+        Thread {
+            var index = db.folderDAO().getMaxOrder()
+            if (index == null) {
+                index = 0
+            } else {
                 index
             }
-            val folderTable = FolderTable(0,folderName,index)
+            val folderTable = FolderTable(0, folderName, index)
             db.folderDAO().insertFolder(folderTable)
             _addFolderResult.postValue("end")
         }.start()
@@ -289,105 +276,120 @@ class MyViewModel : ViewModel() {
 
     //폴더 가져오기
     val _getAll = MutableLiveData<List<FolderTable>>()
-    val getAllResult : LiveData<List<FolderTable>> get() = _getAll
+    val getAllResult: LiveData<List<FolderTable>> get() = _getAll
     fun getAll() {
         Thread {
             _getAll.postValue(db.folderDAO().getAll())
         }.start()
     }
-    fun count():MutableLiveData<Int>{
-        val liveData:MutableLiveData<Int> = MutableLiveData()
-        Thread{
-            val i=db.folderDAO().count()
+
+    fun count(): MutableLiveData<Int> {
+        val liveData: MutableLiveData<Int> = MutableLiveData()
+        Thread {
+            val i = db.folderDAO().count()
             liveData.postValue(i)
         }.start()
         return liveData
     }
+
     //폴더 삭제
     private val _folderDeleteResult = MutableLiveData<String>()
     val folderDeleteResult: LiveData<String> get() = _folderDeleteResult
     fun folderDelete(list: List<String>) {
         Thread {
-                db.folderDAO().folderDelete(list)
+            db.folderDAO().folderDelete(list)
             _folderDeleteResult.postValue("end")
         }.start()
     }
+
     //아이템 삭제
     private val _itemDelete = MutableLiveData<String>()
     val itemDeleteResult: LiveData<String> get() = _itemDelete
-    fun itemDelete(folderName:String,list: List<String>) {
+    fun itemDelete(folderName: String, list: List<String>) {
 
         Thread {
-                db.itemDAO().itemDelete(folderName,list)
+            db.itemDAO().itemDelete(folderName, list)
             _itemDelete.postValue("end")
         }.start()
     }
+
     //폴더 개수 체크
     private val _checkTextView = MutableLiveData<Int>()
-    val checkTextViewResult:LiveData<Int> get() = _checkTextView
-    fun checkTextView(folderName: String){
-        Thread{
+    val checkTextViewResult: LiveData<Int> get() = _checkTextView
+    fun checkTextView(folderName: String) {
+        Thread {
             val int = db.folderDAO().checkTextView(folderName)
             _checkTextView.postValue(int)
         }.start()
     }
+
     //해당 폴더에 있는 아이템 수 조회
-    fun countItem(folderName: String?): MutableLiveData<LiveData<Int>>{
-        val countItem : MutableLiveData<LiveData<Int>> = MutableLiveData()
-        Thread{
+    fun countItem(folderName: String?): MutableLiveData<LiveData<Int>> {
+        val countItem: MutableLiveData<LiveData<Int>> = MutableLiveData()
+        Thread {
             val int = folderName?.let { db.itemDAO().count(it) }
             countItem.postValue(int)
         }.start()
         return countItem
     }
+
     /////////////////////////////////////////////////////////////////////
-    fun insertItem(stockName:String,folderName: String,stockCode: String){
-        Thread{
+    fun insertItem(stockName: String, folderName: String, stockCode: String) {
+        Thread {
             var index = db.itemDAO().getMaxOrder()
-            if (index==null){
-                index=0
-            }else{
+            if (index == null) {
+                index = 0
+            } else {
                 index
             }
 
-            db.itemDAO().insertItem(ItemTable(itemName = stockName, folderName = folderName, index = index, itemCode = stockCode))
+            db.itemDAO().insertItem(
+                ItemTable(
+                    itemName = stockName,
+                    folderName = folderName,
+                    index = index,
+                    itemCode = stockCode
+                )
+            )
         }.start()
     }
+
     //해당 폴더에 있는 아이템 조회
     private val _getAllItems = MutableLiveData<List<ItemTable>>()
-    val getAllItemsResult:LiveData<List<ItemTable>> get() = _getAllItems
-    fun getAllItems(folderName: String){
-        Thread{
+    val getAllItemsResult: LiveData<List<ItemTable>> get() = _getAllItems
+    fun getAllItems(folderName: String) {
+        Thread {
             _getAllItems.postValue(db.itemDAO().getAll(folderName))
         }.start()
     }
 
 
     //폴더 이름 변경
-    fun reNameFolder(oldName:String,newName:String):MutableLiveData<String>{
-        val liveData : MutableLiveData<String> = MutableLiveData()
-        Thread{
-            db.folderDAO().updateFolderName(oldName,newName)
+    fun reNameFolder(oldName: String, newName: String): MutableLiveData<String> {
+        val liveData: MutableLiveData<String> = MutableLiveData()
+        Thread {
+            db.folderDAO().updateFolderName(oldName, newName)
             liveData.postValue("finish")
         }.start()
         return liveData
     }
+
     //동일 종목 체크
-    fun itemCheck(folderName: String?,stockName: List<String>):MutableLiveData<Int>{
+    fun itemCheck(folderName: String?, stockName: List<String>): MutableLiveData<Int> {
         val liveData: MutableLiveData<Int> = MutableLiveData()
-        Thread{
+        Thread {
             if (folderName != null) {
-                val int =db.itemDAO().checkItem(folderName,stockName)
+                val int = db.itemDAO().checkItem(folderName, stockName)
                 liveData.postValue(int)
             }
         }.start()
         return liveData
     }
+
     //itemMove
-    fun itemMove(folderName: String,stockName:String,index:Int){
-        Thread{
-            Log.d("dafsdfd","$folderName 테이블, $stockName -> $index")
-            db.itemDAO().updateOrder(folderName,stockName,index)
+    fun itemMove(folderName: String, stockName: String, index: Int) {
+        Thread {
+            db.itemDAO().updateOrder(folderName, stockName, index)
         }.start()
     }
 

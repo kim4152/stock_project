@@ -1,7 +1,5 @@
 package com.project.stockproject.stockInform
 
-import android.content.Context
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,36 +16,39 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.common.BackKeyHandler
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FragmentStockInformBinding
+import com.project.stockproject.favorite.SubFragment
+import com.project.stockproject.room.ItemTable
 import com.project.stockproject.search.HistoryManager
 import com.project.stockproject.search.Search
 import com.project.stockproject.search.SearchAdapter
 import com.project.stockproject.search.SearchHistory
 import com.project.stockproject.search.SearchHistoryManager
 import com.project.stockproject.search.SearchResult
+import com.project.stockproject.stockInform.chart.MakeChart
+import com.project.stockproject.stockInform.chart.StockInfoRequest
+import com.project.stockproject.stockInform.openai.ChatRequest
+import com.project.stockproject.stockInform.openai.MessageRequest
+import java.text.DecimalFormat
 import kotlin.math.abs
-import kotlin.math.ceil
 
 
 class StockInformFragment : Fragment() {
     private lateinit var binding: FragmentStockInformBinding
     private lateinit var viewModel: MyViewModel
+    private lateinit var tabViewModel: TabViewModel
     private lateinit var searchManager: SearchHistoryManager
     private lateinit var getStockCode: String
     private lateinit var getStockName: String
     private lateinit var callback: OnBackPressedCallback
-
-    companion object {
-        var CURRENT_PAGE: Int? = 0
-        var STOCKOUTPUT: StockOutput? = null
-    }
-
+    private lateinit var pagerAdapter: StockInformViewPagerAdapter
+    private lateinit var viewPager2: ViewPager2
+    private var stockList: MutableList<StockList> = mutableListOf()
+    private var currentPosition = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,52 +63,50 @@ class StockInformFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(this)[MyViewModel::class.java]
+        tabViewModel = ViewModelProviders.of(this)[TabViewModel::class.java]
         searchManager = SearchHistoryManager(MyApplication.getAppContext())
+        viewPager2 = binding.stockInforViewPager
 
-        try{
+        binding.stockDiscussion.setOnClickListener { stockDiscussionClick() }
+
+        try {
             //관심종목에서 왔을때
-            if (!requireArguments().getString("stockName").isNullOrEmpty()){
+            if (!requireArguments().getString("stockName").isNullOrEmpty()) {
                 setBackpress("favorite") //뒤로가기 제어
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
                 val name = requireArguments().getString("stockName")
                 val code = requireArguments().getString("stockCode")
+                val folderName = requireArguments().getString("folderName")
                 getStockName = name.toString()
                 getStockCode = code.toString()
                 binding.searchBar.text = getStockName
+                getStockInform(folderName!!)
             }
             //아니라면 오류발생 ->
-        }catch (e:Exception){
+        } catch (e: Exception) {
             setBackpress("") //뒤로가기 제어
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
             getStockName = searchManager.getSearchHistory().first().stockName
             getStockCode = searchManager.getSearchHistory().first().stockCode
             binding.searchBar.text = getStockName
+            getStockInform("search")
         }
 
-        //검색창 클릭 결과
 
-
-        viewModel.setTabLayout(getStockCode).observe(this, Observer {
-            STOCKOUTPUT = it
-            setTabLayout()
-        })
-
-
-        getStockInform()  //cardView에 정보 입력
         searchView()
         adapterSetting()
     }
 
-    private fun setBackpress(from:String){
+    private fun setBackpress(from: String) {
         callback = object : OnBackPressedCallback(true) {
             val backKeyHandler = BackKeyHandler(activity)
             override fun handleOnBackPressed() {
                 // 뒤로 가기 버튼 처리
-                if (from == "favorite"){
+                if (from == "favorite") {
                     findNavController().navigate(R.id.action_stockInformFragment_to_favoriteFragment)
-                }else{
+                } else {
                     findNavController().navigate(R.id.action_stockInformFragment_to_homeFragment)
                 }
             }
@@ -121,104 +120,95 @@ class StockInformFragment : Fragment() {
 
 
     //주식 정보 받아와서 viewPager에 뿌리기
-    private fun getStockInform() {
-        val list = mutableListOf<HistoryManager>()
-        val viewPager = binding.stockInforViewPager
+    private fun getStockInform(string: String) {
+        if (string == "search") {
+            //최근검색기록 10개의 주식 정보 받아오기
+            searchManager.getSearchHistory().forEach {
+                stockList.add(StockList(it.stockCode, it.stockName))
+            }
+            sendViewModelData()
+        } else {
+            makeFavoriteList(string)
+        }
+    }
+    private fun makeFavoriteList(folderName: String) {
+        viewModel.getAllItems(folderName)
+        viewModel.getAllItemsResult.observe(this, Observer {
+            val tmpList = it.transform().toMutableList()
+            val index = tmpList.indexOfFirst { stockList ->
+                stockList.stockName == getStockName
+            }
+            if (index != -1) {
+                // 해당 StockList가 리스트에 존재하는 경우
+                val targetStock = tmpList.removeAt(index)
+                tmpList.add(0, targetStock)
+            }
+            stockList=tmpList
+            searchManager.getSearchHistory().forEach {historyManager->
+                stockList.add(StockList(historyManager.stockCode, historyManager.stockName))
+            }
 
-        val pagerAdapter = StockInformViewPagerAdapter(mutableListOf(), favoriteClick = {
-            val stockName=searchManager.getStockNameByCode(it)
+            sendViewModelData()
+        })
+    }
+    private fun List<ItemTable>.transform(): List<StockList> {
+        return this.map {
+            StockList(
+                stockCode = it.itemCode,
+                stockName = it.itemName
+            )
+        }
+    }
+    private fun sendViewModelData(){
+        viewModel.stockInformRetrofit(stockList).observe(this, Observer { i ->
+            viewPagerSetting()
+            pagerAdapter.addItem(i)
+            viewPager2.offscreenPageLimit = i.size + 1
+        })
+    }
+
+
+    //주요지수 뷰 페이저 어댑터 세팅
+    private fun viewPagerSetting() {
+        pagerAdapter = StockInformViewPagerAdapter(mutableListOf(), favoriteClick = {
+            val stockName = searchManager.getStockNameByCode(it)
             if (stockName != null) {
-                val bundle = bundleOf("stock_name" to stockName,"stock_code" to it)
-                findNavController().navigate(R.id.action_stockInformFragment_to_customDialogFavorite,bundle)
+                val bundle = bundleOf("stock_name" to stockName, "stock_code" to it)
+                findNavController().navigate(
+                    R.id.action_stockInformFragment_to_customDialogFavorite,
+                    bundle
+                )
             }
         })
 
-
-        //최근검색기록 10개의 주식 정보 받아오기
-        searchManager.getSearchHistory().forEach {
-            list.add(it)
-        }
-        majorIndexViewPager(viewPager, pagerAdapter, list)
-
-        viewModel.singleViewPager(getStockCode, pagerAdapter)
-        if (list.size >= 2) {
-            Thread.sleep(200)
-            viewModel.stockInformRetrofit(list, viewPager, pagerAdapter)
-        }
-
-    }
-
-    //주요지수 뷰 페이저 어댑터 세팅
-    private fun majorIndexViewPager(
-        viewPager2: ViewPager2,
-        pagerAdapter: StockInformViewPagerAdapter,
-        searchHistorylist: List<HistoryManager>
-    ) {
-        viewPager2.adapter = pagerAdapter
-
         viewPager2.apply {
+            adapter = pagerAdapter
             setPadding(40, 0, 40, 0)
             //viewPager이벤트
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
-                    val stockCode = pagerAdapter.getList()[position].stck_shrn_iscd
-                    val stockName = searchManager.getStockNameByCode(stockCode)
+                    currentPosition = position
+                    val stockCode = pagerAdapter.getList()[currentPosition].stck_shrn_iscd
+                    val stockName = stockList[position].stockName
                     binding.searchBar.text = stockName
-                    STOCKOUTPUT = viewModel.getList[position]
-                    setTabLayout()
-
+                    setChart(stockCode, stockName!!)    //차트
+                    //setOpenAI(stockCode, stockName) //open ai
+                    setStockInfrom()
                 }
             })
 
+            //옆 viewPager 보이게
+            var transform = CompositePageTransformer()
+            transform.addTransformer(MarginPageTransformer(15))
+            transform.addTransformer { view: View, fl: Float ->
+                var v = 1 - abs(fl)
+                view.scaleY = 0.8f + v * 0.2f
+            }
+            setPageTransformer(transform)
         }
-        var transform = CompositePageTransformer()
-        transform.addTransformer(MarginPageTransformer(15))
-        transform.addTransformer { view: View, fl: Float ->
-            var v = 1 - abs(fl)
-            view.scaleY = 0.8f + v * 0.2f
-        }
-        viewPager2.setPageTransformer(transform)
+
     }
 
-    //////////////////////////////////////////////////////////////////////////////
-    private lateinit var tabLayout: TabLayout
-    private lateinit var tabAdapter: TabLayoutAdapter
-    private lateinit var viewPager2: ViewPager2
-
-    private fun setTabLayout() {
-        tabLayout = binding.tabLayout
-        viewPager2 = binding.tabViewPager
-        tabAdapter = TabLayoutAdapter(activity)
-        viewPager2.adapter = tabAdapter
-        viewPager2.isUserInputEnabled = false //좌우 스크롤 막기
-        viewPager2.currentItem = CURRENT_PAGE!!
-
-        TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            when (position) {
-                0 -> tab.text = "차트"
-                1 -> tab.text = "호가"
-                2 -> tab.text = "종목토론"
-                3 -> tab.text = "유튜브"
-            }
-        }.attach()
-
-
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                CURRENT_PAGE = tab?.position?.toInt()
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-
-            }
-
-        })
-
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
 //searchView setting, 타자 칠때
@@ -246,8 +236,8 @@ class StockInformFragment : Fragment() {
                     var list: MutableList<Search> = mutableListOf()
                     var duplicateCheck: MutableList<String> = mutableListOf()
                     it.forEach { item ->
-                        val stockName = item.itmsNm
-                        val stockCode = item.srtnCd
+                        val stockName = item.stock_name
+                        val stockCode = item.stock_code
                         if (duplicateCheck.contains(stockCode)) {//중복된 종목 거르기
                         } else {//중복안된 데이터는 추가
                             list.add(SearchResult(null, stockName, stockCode, null))
@@ -292,8 +282,11 @@ class StockInformFragment : Fragment() {
             },
             onStarClick = {
                 //즐찾클릭
-                val bundle = bundleOf("stock_name" to it.stockName,"stock_code" to it.stockCode)
-                findNavController().navigate(R.id.action_stockInformFragment_to_customDialogFavorite,bundle)
+                val bundle = bundleOf("stock_name" to it.stockName, "stock_code" to it.stockCode)
+                findNavController().navigate(
+                    R.id.action_stockInformFragment_to_customDialogFavorite,
+                    bundle
+                )
             }
         )
         binding.searchViewRecyclerView.apply {
@@ -302,6 +295,80 @@ class StockInformFragment : Fragment() {
         }
     }
 
+    ///////////////////////////////////////////////////////////
+    private fun setChart(stockCode: String, stockName: String) {
+        tabViewModel.cancelPredicCall() //예측값 찾는 Call 중지
+        val marketName = pagerAdapter.getList()[currentPosition].rprs_mrkt_kor_name
+        val makeChart = MakeChart(stockCode, binding.combinedChart, tabViewModel, this, marketName)
+        makeChart.init()
+    }
+
+    //open ai
+    private fun setOpenAI(stockCode: String, stockName: String) {
+        val message = "${stockName}의 focus_areas를 json형식으로 한글로 알려줘"
+
+        val chatRequest = ChatRequest(
+            messages = listOf(
+                MessageRequest(content = message)
+            )
+        )
+        tabViewModel.openAI(chatRequest).observe(this, Observer {
+
+        })
+    }
+
+    //투자정보
+    private fun setStockInfrom() {
+        val stockOuput = pagerAdapter.getList()[currentPosition]
+        binding.avls2.text = numberToKorean(stockOuput.hts_avls.toLong())//시가총액
+        binding.pbr2.text = "${stockOuput.pbr}배" //pbr
+        binding.per2.text = "${stockOuput.per}배"
+        binding.eps2.text = "${numberFormat(stockOuput.eps.toDouble().toInt())}원"
+        binding.bps2.text = "${numberFormat(stockOuput.bps.toDouble().toInt())}원"
+
+    }
+
+    //시총 변환
+    private fun numberToKorean(number: Long): String {
+        if (number == 0L) {
+            return "0"
+        } else if (number < 0) {
+            return "${number}억"
+        } else {
+            val numberList = number.toString()
+            if (numberList.length > 4) {
+                //조단위
+                return "${
+                    df.format(
+                        numberList.substring(0, numberList.length - 4).toInt()
+                    )
+                }조 ${df.format(numberList.substring(numberList.length - 4).toInt())}억"
+            } else {
+                //억단위
+                return "${numberList}억"
+            }
+        }
+    }
+
+    val df = DecimalFormat("#,###") //세자리마다 콤마 찍기
+    private fun numberFormat(number: Int): String {
+
+        val df = DecimalFormat("#,###") //세자리마다 콤마 찍기
+        if (number.toString().substring(0, 1) == "-") {
+            return "-${df.format(number.toString().substring(1).toInt())}"
+        } else {
+            return "${df.format(number.toInt())}"
+        }
+
+    }
+
+
+    private fun stockDiscussionClick() {
+        val stockCode = pagerAdapter.getList()[currentPosition].stck_shrn_iscd
+
+        val bundle = bundleOf("stockCode" to stockCode)
+        findNavController().navigate(R.id.action_stockInformFragment_to_discussionFragment, bundle)
+    }
 
 }
 

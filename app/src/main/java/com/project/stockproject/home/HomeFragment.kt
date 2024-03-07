@@ -208,8 +208,8 @@ class HomeFragment : Fragment() {
                     var list: MutableList<Search> = mutableListOf()
                     var duplicateCheck: MutableList<String> = mutableListOf()
                     it.forEach { item ->
-                        val stockName = item.itmsNm
-                        val stockCode = item.srtnCd
+                        val stockName = item.stock_name
+                        val stockCode = item.stock_code
                         if (duplicateCheck.contains(stockCode)) {//중복된 종목 거르기
                         } else {//중복안된 데이터는 추가
                             list.add(SearchResult(null, stockName, stockCode, null))

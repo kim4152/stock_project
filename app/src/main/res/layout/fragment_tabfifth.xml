@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".stockInform.tabFragment.TabYoutubeFragment">
 
-    <com.project.stockproject.stockInform.tabFragment.CustomWebView
+
+
+    <com.project.stockproject.stockInform.webView.CustomWebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

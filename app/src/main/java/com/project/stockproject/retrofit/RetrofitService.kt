@@ -1,14 +1,17 @@
 package com.project.stockproject.retrofit
 
 import com.project.stockproject.common.GetToken
-import com.project.stockproject.search.Response
-import com.project.stockproject.search.searchResponse
+import com.project.stockproject.search.AwsAPIStockInfo
 import com.project.stockproject.stockInform.StockInformItem
-import com.project.stockproject.stockInform.tabFragment.GetCurrentChart
-import com.project.stockproject.stockInform.tabFragment.NewsRSS
+import com.project.stockproject.stockInform.chart.GetCurrentChart
+import com.project.stockproject.stockInform.chart.PredictionData
+import com.project.stockproject.stockInform.chart.StockInfoRequest
+import com.project.stockproject.stockInform.disclosure.CorpCode
+import com.project.stockproject.stockInform.openai.ChatCompletionResponse
+import com.project.stockproject.stockInform.openai.ChatRequest
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.POST
 
 import retrofit2.http.Query
@@ -16,31 +19,22 @@ import retrofit2.http.Query
 interface RetrofitService {
 
     //한국투자증권 토큰발급
-    @POST("/getToken-API-V1/customer")
+    @POST("ndAWS-1/getToken")
     fun getToken(): Call<GetToken>
 
     //검색창
-    @GET("1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?")
-    fun search(
-        @Query("serviceKey") serviceKey: String,
-        @Query("resultType") resultType: String,
-        @Query("numOfRows") numOfRows: String,
-        @Query("likeItmsNm") likeItmsNm: String,
-    ): Call<searchResponse>
+    @GET("ndAWS-1/getInfoByName")
+    fun search1(@Query("stock_name") stock_name:String):Call<List<AwsAPIStockInfo>>
+
+
     //종목 정보
-
-
     @GET("uapi/domestic-stock/v1/quotations/inquire-price?")
     fun stockInform(
         @Query("fid_cond_mrkt_div_code") fid_cond_mrkt_div_code: String,
         @Query("fid_input_iscd") fid_input_iscd: String,
     ): Call<StockInformItem>
 
-    @GET("rss/search?hl=ko&gl=KR&ceid=KR:ko")
-    fun getNews(
-        @Query("q") q: String
-    ): Call<NewsRSS>
-
+    //한투증(일/주/월)
     @GET("uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?")
     fun getCurrentChart(
         @Query("fid_cond_mrkt_div_code") fid_cond_mrkt_div_code: String,
@@ -50,4 +44,18 @@ interface RetrofitService {
         @Query("fid_period_div_code") fid_period_div_code:String  ,
         @Query("fid_org_adj_prc") fid_org_adj_prc:String  ,
     ): Call<GetCurrentChart>
+
+    //open ai
+    @POST("v1/chat/completions")
+    fun getOpenAI(
+        @Body chatRequest: ChatRequest
+    ): Call<ChatCompletionResponse>
+
+    //주가 예측 (선차트)
+    @POST("getStockInfo")
+    fun getStockInfo(@Body stockInfoRequest: StockInfoRequest): Call<PredictionData>
+
+    //증시 코드 받아오기
+    @GET("ndAWS-1/getCorp")
+    fun getCorpCode(@Query("stock_code") stockCode:String): Call<CorpCode>
 }

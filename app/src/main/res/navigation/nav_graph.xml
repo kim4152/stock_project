@@ -50,6 +50,13 @@
             app:destination="@id/favoriteFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_stockInformFragment_to_discussionFragment"
+            app:destination="@id/discussionFragment"
+            />
+        <action
+            android:id="@+id/action_stockInformFragment_to_youtubeFragment"
+            app:destination="@id/youtubeFragment" />
     </fragment>
     <fragment
         android:id="@+id/majorIndexFragment"

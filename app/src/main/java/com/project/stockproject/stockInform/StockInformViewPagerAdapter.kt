@@ -18,10 +18,14 @@ class StockInformViewPagerAdapter(private var adapterList: MutableList<StockOutp
 ) :
     RecyclerView.Adapter<StockInformViewPagerAdapter.ViewHolder>() {
 
-    fun addItem(item: StockOutput) {
-        adapterList.add(item)
+    fun addItem(item: List<StockOutput>) {
+        item.forEach {
+            adapterList.add(it)
+        }
         notifyDataSetChanged()
     }
+
+
     fun getList():List<StockOutput>{
        return adapterList
     }

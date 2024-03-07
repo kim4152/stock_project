@@ -48,33 +48,12 @@ data class HistoryManager(
 )
 
 
-data class searchResponse(
-    val response: Response
+
+data class AwsAPIStockInfo(
+    val stock_code: String,
+    val stock_name: String,
+    val stock_market: String,
+    val stock_industry: String,
+    val stock_predic_price: String
 )
 
-data class Response(
-    val header: Header,
-    val body: Body
-)
-
-data class Header(
-    val resultCode: String,
-    val resultMsg: String
-)
-
-data class Body(
-    val numOfRows: Int,
-    val pageNo: Int,
-    val totalCount: Int,
-    val items: Items
-)
-
-data class Items(
-    val item: List<StockItem>
-)
-
-data class StockItem(
-    val srtnCd: String,
-    val itmsNm: String,
-    val mrktCtg: String,
-)

@@ -1,4 +1,4 @@
-package com.project.stockproject.stockInform.tabFragment
+package com.project.stockproject.stockInform.webView
 
 import android.content.Context
 import android.util.AttributeSet

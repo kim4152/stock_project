@@ -1,4 +1,6 @@
 <resources>
+    <color name="naver_color">#03C75A</color>
+    <color name="youtube_color">#FF0000</color>
     <color name="marker">#80D2E4FF</color>
     <color name = "secondaryContainer">#D7E3F8</color>
     <color name="surface">#FDFCFF</color>

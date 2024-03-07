@@ -1,5 +1,7 @@
 package com.project.stockproject.stockInform
 
+import com.project.stockproject.room.ItemTable
+
 
 data class StockInformItem(
     val output: StockOutput,
@@ -47,3 +49,10 @@ data class StockOutput(
     val short_over_yn: String,            //단기과열여부 Y/N
     val sltr_yn: String                //정리매매여부 Y/N
 )
+
+data class StockList(
+    val stockCode:String,
+    val stockName:String,
+)
+
+
