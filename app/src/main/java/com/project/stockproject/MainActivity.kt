@@ -1,6 +1,5 @@
 package com.project.stockproject
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -8,34 +7,19 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doBeforeTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.project.stockproject.common.BackKeyHandler
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.ActivityMainBinding
-import com.project.stockproject.favorite.EditFragment
-import com.project.stockproject.home.HomeFragment
 import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.search.SearchAdapter
-import com.project.stockproject.search.SearchHistory
 import com.project.stockproject.search.SearchHistoryManager
-import com.project.stockproject.stockInform.StockInformFragment
 
 
 class MainActivity : AppCompatActivity()  {
@@ -63,7 +47,14 @@ class MainActivity : AppCompatActivity()  {
        // setBottomNavigation(bottomNav)//바텀 네비게이션
         searchManager= SearchHistoryManager(MyApplication.getAppContext())
         viewModel = ViewModelProviders.of(this)[MyViewModel::class.java] //viewModel 정의
+
         getToken() //한국투자증권 토큰 발급
+        getInform() //알림
+
+
+    }
+
+    private fun getInform(){
 
     }
 
@@ -124,12 +115,6 @@ class MainActivity : AppCompatActivity()  {
         })
     }
 
-
-
-    //뒤로가기 이벤트
-    private val backKeyHandler: BackKeyHandler = BackKeyHandler(this)
-    @SuppressLint("MissingSuperCall")
-    //override fun onBackPressed() { backKeyHandler.onBackPressed() }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()

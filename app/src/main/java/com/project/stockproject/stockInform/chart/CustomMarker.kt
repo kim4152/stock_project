@@ -125,16 +125,18 @@ class CustomMarker(context: Context, layoutResource: Int) : MarkerView(context, 
     }
 
     //두 가격차이 백분율
-    private fun calculatePercentageDifference(a: Int, b: Int): Double {
+    private fun calculatePercentageDifference(a: Int, b: Int): String {
         if (a == 0 && b == 0) {
-            return 0.0 // A와 B가 모두 0이면 차이가 없음
+            return "0.0" // A와 B가 모두 0이면 차이가 없음
         }
         val difference = a-b
         val percentageDifference = ((difference.toDouble() / b) * 100)
-        return round(percentageDifference * 100) / 100 // 소숫점 둘째 자리까지 반올림
+        val re = round(percentageDifference * 100) / 100 // 소숫점 둘째 자리까지 반올림
+        return if (re>0) "+${re}" else "$re"
     }
     //색 입히기
-    private fun setColor(percentage:Double,string:String){
+    private fun setColor(percen:String,string:String){
+        val percentage = percen.toDouble()
         when(string){
             "endPrice"->{
                 if (percentage>0.0){

@@ -13,10 +13,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitFactory {
-    private const val BASE_URL = "https://apis.data.go.kr/"
     private const val KIS_BASE_URL="https://openapi.koreainvestment.com:9443/"
     private const val AWS_API_URL="https://xd3airbh73.execute-api.ap-northeast-2.amazonaws.com/"
-    private const val AWS_EC2_URL="http://43.203.126.129:5000/"
+    private const val AWS_EC2_URL="http://3.36.61.207:5000/"
 
     var TOKEN  =""
     private const val  APP_KEY ="PSUzp1CHZpjgiCVInHoU5vXrc1gMvQ34FbRw"
@@ -34,17 +33,12 @@ object RetrofitFactory {
         .addInterceptor(MyInterceptor3())
         .build()
 
-    //토큰 받아올떄
+    //aws API GATEWAY
     val awsAPIRetrofit: Retrofit = Retrofit.Builder()
         .baseUrl(AWS_API_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    //검색
-    val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
 
     //한국투자증권(종목 한개 조회)
     val stockInfromRetrofit: Retrofit = Retrofit.Builder()

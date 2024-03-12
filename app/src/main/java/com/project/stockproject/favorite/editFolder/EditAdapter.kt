@@ -1,4 +1,4 @@
-package com.project.stockproject.favorite
+package com.project.stockproject.favorite.editFolder
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.project.stockproject.databinding.EditItemBinding
-import com.project.stockproject.databinding.FavoriteDialogItemBinding
-import com.project.stockproject.room.FolderTable
 
 class EditAdapter(private val onClick:(EditItem)->Unit, )
     : ListAdapter<EditItem, EditAdapter.ViewHolder>(diffUtil) {

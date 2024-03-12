@@ -6,6 +6,7 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -13,13 +14,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.project.stockproject.common.GetToken
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.favorite.FavoriteDialogAdapter
+import com.project.stockproject.favorite.SubFragment
+import com.project.stockproject.home.MFItem
 import com.project.stockproject.home.MajorIndexViewPagerDTO
+import com.project.stockproject.home.Predic
 import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.retrofit.RetrofitService
 import com.project.stockproject.room.FavoriteDB
-
-import com.project.stockproject.room.FavoriteDB.Companion.MIGRATION_3_4
-import com.project.stockproject.room.FolderDAO
 import com.project.stockproject.room.FolderTable
 import com.project.stockproject.room.ItemTable
 import com.project.stockproject.search.AwsAPIStockInfo
@@ -33,6 +34,7 @@ import com.project.stockproject.stockInform.StockOutput
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -54,8 +56,6 @@ class MyViewModel : ViewModel() {
     // 네트워크 상태를 외부에 노출
     fun getConnectivityLiveData() = connectivityLiveData
 
-    private val retrofit: RetrofitService =
-        RetrofitFactory.retrofit.create(RetrofitService::class.java)
     private val awsAPIRetrofit: RetrofitService =
         RetrofitFactory.awsAPIRetrofit.create(RetrofitService::class.java)
 
@@ -82,7 +82,7 @@ class MyViewModel : ViewModel() {
         var liveData: MutableLiveData<List<AwsAPIStockInfo>> = MutableLiveData()
         searchCall = awsAPIRetrofit.search1(stockName)
 
-        searchCall?.enqueue(object : Callback<List<AwsAPIStockInfo>>{
+        searchCall?.enqueue(object : Callback<List<AwsAPIStockInfo>> {
             override fun onResponse(
                 call: Call<List<AwsAPIStockInfo>>,
                 response: Response<List<AwsAPIStockInfo>>
@@ -186,33 +186,36 @@ class MyViewModel : ViewModel() {
     private val stockInformRetrofit: RetrofitService =
         RetrofitFactory.stockInfromRetrofit.create(RetrofitService::class.java)
 
-    fun stockInformRetrofit(stockList: List<StockList>, ):MutableLiveData<List<StockOutput>> {
+    fun stockInformRetrofit(stockList: List<StockList>): MutableLiveData<List<StockOutput>> {
         val responseList = MutableLiveData<List<StockOutput>>()
-        val tmpList = mutableListOf<StockOutput>()
-        Thread{
-            runBlocking {
-                stockList.forEach { it ->
-                    try {
-                        val response = withContext(Dispatchers.IO) {
-                            stockInformRetrofit.stockInform("J", it.stockCode).execute()
-                        }
 
-                        if (response.isSuccessful) {
-                            val a = response.body()?.output
-                            if (a != null) {
-                                tmpList.add(a)
-                            }
-                        } else {
-                        }
-                    } catch (e: Exception) {
+        viewModelScope.launch {
+            val tmpList = mutableListOf<StockOutput>()
 
+            stockList.forEach { it ->
+                try {
+                    val response = withContext(Dispatchers.IO) {
+                        stockInformRetrofit.stockInform("J", it.stockCode).execute()
                     }
+
+                    if (response.isSuccessful) {
+                        response.body()?.output?.let { a ->
+                            tmpList.add(a)
+                        }
+                    } else {
+                        // Handle unsuccessful response if needed
+                    }
+                } catch (e: Exception) {
+                    // Handle exceptions if needed
                 }
-                responseList.postValue(tmpList)
             }
-        }.start()
+
+            responseList.value = tmpList
+        }
+
         return responseList
     }
+
 
 
     //개별종목보회
@@ -249,6 +252,53 @@ class MyViewModel : ViewModel() {
                 }
             })
         return list
+    }
+
+    fun getMultiFactor(): MutableLiveData<List<MFItem>> {
+        var liveData: MutableLiveData<List<MFItem>> = MutableLiveData()
+        awsAPIRetrofit.getMultiFactor().enqueue(object : Callback<List<MFItem>> {
+            override fun onResponse(call: Call<List<MFItem>>, response: Response<List<MFItem>>) {
+                liveData.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<List<MFItem>>, t: Throwable) {
+
+            }
+
+        })
+        return liveData
+    }
+
+    fun getStockNameByCode(stockCode: String): MutableLiveData<String> {
+        var liveData = MutableLiveData<String>()
+        awsAPIRetrofit.getStockNameByCode(stockCode)
+            .enqueue(object : Callback<List<AwsAPIStockInfo>> {
+                override fun onResponse(
+                    call: Call<List<AwsAPIStockInfo>>,
+                    response: Response<List<AwsAPIStockInfo>>
+                ) {
+                    liveData.postValue(response.body()?.get(0)?.stock_name ?: null)
+                }
+
+                override fun onFailure(call: Call<List<AwsAPIStockInfo>>, t: Throwable) {
+                }
+
+            })
+        return liveData
+    }
+    // 상위 예측가 얻기
+    fun topPredic(limit:String):MutableLiveData<List<Predic>>{
+        var liveData = MutableLiveData<List<Predic>>()
+        awsAPIRetrofit.getPredic(limit).enqueue(object:Callback<List<Predic>>{
+            override fun onResponse(call: Call<List<Predic>>, response: Response<List<Predic>>) {
+                liveData.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<List<Predic>>, t: Throwable) {
+            }
+
+        })
+        return liveData
     }
 ///////////////////////////////////////////////////////////////////////////
     //즐겨찾기 폴더 추가
@@ -358,6 +408,7 @@ class MyViewModel : ViewModel() {
     private val _getAllItems = MutableLiveData<List<ItemTable>>()
     val getAllItemsResult: LiveData<List<ItemTable>> get() = _getAllItems
     fun getAllItems(folderName: String) {
+        Log.d("dafdf","@@@@@@@@@@@@")
         Thread {
             _getAllItems.postValue(db.itemDAO().getAll(folderName))
         }.start()

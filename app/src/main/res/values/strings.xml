@@ -2,4 +2,14 @@
     <string name="app_name">StockProject</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="mse">
+        최근 40일간 실제 주가와 AI 예상 주가 차이의 평균을 측정했습니다.
+    </string>
+
+    <string name="andy">
+        최근 40일간 실제 주가와 예측 주가의 차이를 백분율로 계산하여 투자의 성과를 나타냈습니다.
+    </string>
+    <string name="mf">
+        Quality, Value, Momentum을 종합한\n상위 20개 종목.
+    </string>
 </resources>

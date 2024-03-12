@@ -17,15 +17,13 @@
             app:popUpToInclusive="true"
             />
         <action
-            android:id="@+id/action_homeFragment_to_majorIndexFragment"
-            app:destination="@id/majorIndexFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="false"/>
-        <action
             android:id="@+id/action_homeFragment_to_customDialogFavorite"
             app:destination="@id/customDialogFavorite"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_homeFragment_to_MFCustomDialog"
+            app:destination="@id/MFCustomDialog" />
 
     </fragment>
     <fragment
@@ -50,19 +48,15 @@
             app:destination="@id/favoriteFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false"/>
+
         <action
-            android:id="@+id/action_stockInformFragment_to_discussionFragment"
-            app:destination="@id/discussionFragment"
+            android:id="@+id/action_stockInformFragment_to_discusstionDialogFragment2"
+            app:destination="@id/discusstionDialogFragment3" />
+        <action
+            android:id="@+id/action_stockInformFragment_to_discusstionDialogFragment3"
+            app:destination="@id/discusstionDialogFragment3"
             />
-        <action
-            android:id="@+id/action_stockInformFragment_to_youtubeFragment"
-            app:destination="@id/youtubeFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/majorIndexFragment"
-        android:name="com.project.stockproject.home.MajorIndexFragment"
-        android:label="fragment_major_index"
-        tools:layout="@layout/fragment_major_index" />
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="com.project.stockproject.favorite.FavoriteFragment"
@@ -92,7 +86,7 @@
     </dialog>
     <fragment
         android:id="@+id/editFragment"
-        android:name="com.project.stockproject.favorite.EditFragment"
+        android:name="com.project.stockproject.favorite.editFolder.EditFragment"
         android:label="fragment_edit"
         tools:layout="@layout/fragment_edit" >
         <action
@@ -110,7 +104,7 @@
     </fragment>
     <dialog
         android:id="@+id/dialogFolderRename"
-        android:name="com.project.stockproject.favorite.DialogFolderRename"
+        android:name="com.project.stockproject.favorite.editFolder.DialogFolderRename"
         android:label="fragment_dialog_folder_rename"
         tools:layout="@layout/fragment_dialog_folder_rename" >
         <action
@@ -121,7 +115,7 @@
     </dialog>
     <fragment
         android:id="@+id/editModeFragment"
-        android:name="com.project.stockproject.favorite.EditModeFragment"
+        android:name="com.project.stockproject.favorite.editItem.EditModeFragment"
         android:label="fragment_edit_mode"
         tools:layout="@layout/fragment_edit_mode" >
         <action
@@ -130,4 +124,18 @@
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false"/>
     </fragment>
+    <dialog
+        android:id="@+id/discusstionDialogFragment3"
+        android:name="com.project.stockproject.stockInform.webView.DiscusstionDialogFragment"
+        android:label="DiscusstionDialogFragment" >
+        <action
+            android:id="@+id/action_discusstionDialogFragment3_to_stockInformFragment"
+            app:destination="@id/stockInformFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/MFCustomDialog"
+        android:name="com.project.stockproject.home.multiFactor.MFCustomDialog"
+        android:label="MFCustomDialog" />
+
+
 </navigation>

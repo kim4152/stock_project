@@ -1,6 +1,5 @@
-package com.project.stockproject.favorite
+package com.project.stockproject.favorite.editItem
 
-import android.content.DialogInterface.OnClickListener
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,15 +12,13 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.stockproject.MainActivity
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
-import com.project.stockproject.common.BackKeyHandler
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FragmentEditModeBinding
+import com.project.stockproject.common.ItemTouchHelperCallback
 import com.project.stockproject.room.ItemTable
 
 class EditModeFragment : Fragment() {
@@ -208,7 +205,6 @@ class EditModeFragment : Fragment() {
     }
     private fun setBackpress(){
         callback = object : OnBackPressedCallback(true) {
-            val backKeyHandler = BackKeyHandler(activity)
             override fun handleOnBackPressed() {
                 // 뒤로 가기 버튼 처리
                 findNavController().navigate(R.id.action_editModeFragment_to_favoriteFragment)

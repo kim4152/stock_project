@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="popup_width">300dp</dimen>
     <dimen name="popup_height">500dp</dimen>
     <dimen name="popup_width2">300dp</dimen>
     <dimen name="popup_height2">300dp</dimen>
     <dimen name="marker_width">600dp</dimen>
     <dimen name="marker_height">500dp</dimen>
+
+    <dimen name="design_bottom_navigation_text_size" tools:override="true">6sp</dimen>
+    <dimen name="design_bottom_navigation_active_text_size" tools:override="true">2sp</dimen>
+    <dimen name="design_bottom_navigation_height" tools:override="true">7dp</dimen>
 </resources>

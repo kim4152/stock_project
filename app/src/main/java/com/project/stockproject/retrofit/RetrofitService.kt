@@ -1,11 +1,13 @@
 package com.project.stockproject.retrofit
 
 import com.project.stockproject.common.GetToken
+import com.project.stockproject.home.MFItem
+import com.project.stockproject.home.Predic
 import com.project.stockproject.search.AwsAPIStockInfo
 import com.project.stockproject.stockInform.StockInformItem
+import com.project.stockproject.stockInform.StockList
 import com.project.stockproject.stockInform.chart.GetCurrentChart
 import com.project.stockproject.stockInform.chart.PredictionData
-import com.project.stockproject.stockInform.chart.StockInfoRequest
 import com.project.stockproject.stockInform.disclosure.CorpCode
 import com.project.stockproject.stockInform.openai.ChatCompletionResponse
 import com.project.stockproject.stockInform.openai.ChatRequest
@@ -52,10 +54,22 @@ interface RetrofitService {
     ): Call<ChatCompletionResponse>
 
     //주가 예측 (선차트)
-    @POST("getStockInfo")
-    fun getStockInfo(@Body stockInfoRequest: StockInfoRequest): Call<PredictionData>
+    @GET("getStockInfo")
+    fun getStockInfo(@Query("stock_code")stockCode: String,
+                     @Query("kospi_kosdaq") marketCode:String): Call<PredictionData>
 
     //증시 코드 받아오기
     @GET("ndAWS-1/getCorp")
-    fun getCorpCode(@Query("stock_code") stockCode:String): Call<CorpCode>
+    fun getCorpCode(@Query("stock_code") stockCode:String, ): Call<CorpCode>
+
+    //멀티 팩터 포토폴리오
+    @GET("/ndAWS-1/get-multi-factor")
+    fun getMultiFactor():Call<List<MFItem>>
+
+    @GET("ndAWS-1/getInfoByCode")
+    fun getStockNameByCode(@Query("stock_code") stock_code:String):Call<List<AwsAPIStockInfo>>
+
+    //예측가 상위 n개
+    @GET("ndAWS-1/get-predic")
+    fun getPredic(@Query("limit") limit:String): Call<List<Predic>>
 }

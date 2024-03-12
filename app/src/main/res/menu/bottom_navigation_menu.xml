@@ -9,7 +9,7 @@
         android:id="@+id/stockInformFragment"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="주식 현재가"/>
+        android:title="현재가"/>
     <item
         android:id="@+id/favoriteFragment"
         android:enabled="true"

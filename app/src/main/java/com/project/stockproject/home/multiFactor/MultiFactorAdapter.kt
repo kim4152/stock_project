@@ -1,58 +1,44 @@
-package com.project.stockproject.favorite
+package com.project.stockproject.home.multiFactor
 
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
-import com.project.stockproject.databinding.SubadapterItemBinding
-import com.project.stockproject.search.SearchHistoryManager
+import com.project.stockproject.common.MyApplication.context
+import com.project.stockproject.databinding.ItemMultiFactorBinding
+import com.project.stockproject.home.MFItem
 import java.text.DecimalFormat
-import java.util.Collections
 
+class MultiFactorAdapter(
+    val onClick: (MFItem)->Unit,val index:Int,
+    val viewModel:MyViewModel,val lifecycleOwner: LifecycleOwner
+) : ListAdapter<MFItem, MultiFactorAdapter.ViewHolder>(diffUtil) {
 
-class SubAdapter(
-    val adapter: List<SubFragment.SubItem>, val viewModel: MyViewModel,
-    val context: SubFragment,
-    val editMode:()->Unit,
-    val subOnClick: (SubFragment.SubItem) -> Unit
-) : RecyclerView.Adapter<SubAdapter.ViewHolder>() {
-
-    inner class ViewHolder(val binding: SubadapterItemBinding) :
+    inner class ViewHolder(val binding: ItemMultiFactorBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: SubFragment.SubItem) {
-
-            binding.apply {
-                binding.root.setOnClickListener {
-                    subOnClick(item)
-                }
-
-                textView.text = item.stockName
-
-                //현재가 표현
-                showNowPrice(binding, item)
-
-                binding.root.setOnLongClickListener {
-                    editMode()
-                    true
-                }
-            }
+        fun bind(item: MFItem,position: Int) {
+            binding.root.setOnClickListener { onClick(item) }//종목 클릭시
+            binding.number.text=position.toString()
+            binding.stockName.text = item.stock_name
+            Log.d("dafdfdf","${position}: ${item.stock_name}")
+            showNowPrice(binding, item)
         }
     }
 
-    //관심종목에서 현재가 보여주기 일때 표현
-    private fun showNowPrice(binding: SubadapterItemBinding, item: SubFragment.SubItem) {
-        val stockCode = item.stockCode
+    private fun showNowPrice(binding: ItemMultiFactorBinding, item:MFItem) {
+        val stockCode = item.stock_code
         val df = DecimalFormat("#,###") //세자리마다 콤마 찍기
         binding.apply {
-            viewModel.stockInform(stockCode).observe(context, Observer {
+
+            viewModel.stockInform(stockCode).observe(lifecycleOwner, Observer {
                 if (it!=null){
                     price.text = df.format(it.stck_prpr.toInt())//현재가
                     if (it.prdy_vrss.substring(0, 1) == "-") { //음봉
@@ -122,19 +108,28 @@ class SubAdapter(
             })
         }
     }
+    companion object {
+        val diffUtil = object : DiffUtil.ItemCallback<MFItem>() {
+            override fun areItemsTheSame(oldItem: MFItem, newItem: MFItem): Boolean {
+                return oldItem === newItem
+            }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubAdapter.ViewHolder {
+            override fun areContentsTheSame(oldItem: MFItem, newItem: MFItem): Boolean {
+                return oldItem == newItem
+            }
+
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            SubadapterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemMultiFactorBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
         )
     }
 
-    override fun onBindViewHolder(holder: SubAdapter.ViewHolder, position: Int) {
-        holder.bind(adapter[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(currentList[position],5*index+position+1)
     }
-
-    override fun getItemCount(): Int {
-        return adapter.size
-    }
-
 }

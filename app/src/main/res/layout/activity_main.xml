@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,7 +9,6 @@
     android:layout_height="match_parent"
     android:theme="@style/AppTheme"
     tools:context=".MainActivity">
-
 
     <fragment
         android:id="@+id/mainFrame"
@@ -23,10 +24,11 @@
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.Material3.BottomNavigationView.ActiveIndicator"
+        style="@style/Widget.Material3.BottomNavigationView"
         app:itemActiveIndicatorStyle="@style/Widget.Material3.BottomNavigationView.ActiveIndicator"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:menu="@menu/bottom_navigation_menu"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
     <!--인터넷 확인 애니메이션-->
     <LinearLayout
         android:id="@+id/lottieLayout"

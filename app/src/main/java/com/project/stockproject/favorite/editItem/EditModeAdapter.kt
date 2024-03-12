@@ -1,16 +1,10 @@
-package com.project.stockproject.favorite
+package com.project.stockproject.favorite.editItem
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.project.stockproject.MyViewModel
-import com.project.stockproject.common.MyApplication
-import com.project.stockproject.databinding.EditItemBinding
 import com.project.stockproject.databinding.EditModeItemBinding
-import java.util.Collections
 
 class EditModeAdapter(
     var adapterList:ArrayList<EditModeItem>,
@@ -23,8 +17,6 @@ class EditModeAdapter(
     inner class ViewHolder(val binding: EditModeItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: EditModeItem) {
-
-
             binding.root.setOnClickListener { onClick(item) }
             binding.checkbox.isChecked = item.isChecked
             binding.textView.text = item.stockName
@@ -42,19 +34,14 @@ class EditModeAdapter(
     }
 
 
-
     override fun updateItemOrder() {
-
-        Log.d("dfsdf", "${adapterList.map { it.stockName }}")
-
-
          adapterList.forEachIndexed { index, editModeItem ->
 
              viewModel.itemMove(folderName,editModeItem.stockName,index)
          }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EditModeAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             EditModeItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
@@ -66,7 +53,7 @@ class EditModeAdapter(
         return adapterList.size
     }
 
-    override fun onBindViewHolder(holder: EditModeAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(adapterList[position])
     }
 

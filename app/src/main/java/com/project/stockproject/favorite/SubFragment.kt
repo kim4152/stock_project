@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
@@ -32,6 +33,7 @@ class SubFragment(private val folderTable: FolderTable):Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel.getAllItems(folderTable.folderName)
         viewModel.getAllItemsResult.observe(this,observer)
     }
@@ -48,7 +50,7 @@ class SubFragment(private val folderTable: FolderTable):Fragment() {
             subOnClick = { click ->
                 val bundle =
                     bundleOf("stockCode" to click.stockCode, "stockName" to click.stockName
-                    ,"folderName" to folderTable.folderName)
+                        ,"folderName" to folderTable.folderName)
                 findNavController().navigate(
                     R.id.action_favoriteFragment_to_stockInformFragment, bundle
                 )

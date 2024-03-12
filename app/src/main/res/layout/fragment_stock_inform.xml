@@ -5,13 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".stockInform.StockInformFragment">
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <androidx.core.widget.NestedScrollView
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/transparent">
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/search_bar"
+                style="@style/Widget.Material3.SearchBar"
+                android:elevation="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="종목 검색" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,14 +49,139 @@
                 app:layout_constraintTop_toBottomOf="@id/stockInforViewPager"
                 android:layout_margin="7dp"
                 />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/predicPriceCons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                app:layout_constraintTop_toBottomOf="@id/combinedChart">
+
+                <TextView
+                    android:id="@+id/predicPriceTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:text="AI 예측"
+                    android:gravity="center"/>
+                    <TextView
+                        android:id="@+id/predicPriceText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/predicPriceTitle"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:background="@drawable/background_oval2"
+                        tools:text="98,000"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:gravity="center_vertical|center_horizontal"/>
+
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    app:indicatorColor="?attr/colorOnPrimary"
+                    app:layout_constraintTop_toTopOf="@id/predicPriceText"
+                    app:layout_constraintStart_toStartOf="@id/predicPriceText"
+                    app:layout_constraintEnd_toEndOf="@id/predicPriceText"
+                    app:layout_constraintBottom_toBottomOf="@id/predicPriceText"
+                    />
+
+                <TextView
+                    android:id="@+id/predicPriceText1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="직전 종가 대비 +4%"
+                    android:gravity="center_horizontal"
+                    app:layout_constraintTop_toBottomOf="@id/predicPriceText"/>
+                <TextView
+                    android:id="@+id/predicPriceText2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="직전 예측가 대비 -2%"
+                    android:gravity="center_horizontal"
+                    app:layout_constraintTop_toBottomOf="@id/predicPriceText1"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/chartanal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintTop_toBottomOf="@id/predicPriceCons">
+                <TextView
+                    android:id="@+id/analTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="AI 매매 성과"
+                    android:layout_marginLeft="10dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/circle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_oval"
+                    app:layout_constraintTop_toBottomOf="@id/analTitle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:text="83%"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical|center"/>
+                <TextView
+                    android:id="@+id/circleText1"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="@id/circle1"
+                    app:layout_constraintBottom_toBottomOf="@id/circle1"
+                    app:layout_constraintStart_toEndOf="@id/circle1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="@string/mse"
+                    android:layout_marginHorizontal="15dp"
+                    android:gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/circle2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_oval"
+                    app:layout_constraintTop_toBottomOf="@id/circle1"
+                    app:layout_constraintStart_toStartOf="@id/circle1"
+                    tools:text="83%"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical|center"/>
+                <TextView
+                    android:id="@+id/circleText2"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="@id/circle2"
+                    app:layout_constraintBottom_toBottomOf="@id/circle2"
+                    app:layout_constraintStart_toEndOf="@id/circle2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="@string/andy"
+                    android:layout_marginHorizontal="15dp"
+                    android:gravity="center_vertical"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/inform"
+                android:padding="10dp"
+                android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="7dp"
-                app:layout_constraintTop_toBottomOf="@id/combinedChart">
+                app:layout_constraintTop_toBottomOf="@id/chartanal"
+                >
                 <TextView
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
@@ -69,7 +208,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:gravity="end"
                     android:layout_marginTop="10dp"/>
-                ////////////////////////////////
+
                 <TextView
                     android:id="@+id/pbr1"
                     android:layout_width="wrap_content"
@@ -145,15 +284,18 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/stock_discussion"
                 android:text="종목토론"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/inform"
-                android:layout_margin="7dp"
+                android:layout_marginHorizontal="7dp"
+                android:layout_marginBottom="15dp"
                 app:strokeColor="@color/naver_color"
                 app:strokeWidth="1dp"
+                android:layout_marginTop="10dp"
                 android:backgroundTint="@color/transparent"
                 android:textColor="@color/naver_color"
                 android:textStyle="bold"/>
@@ -161,18 +303,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent">
-            <com.google.android.material.search.SearchBar
-                android:id="@+id/search_bar"
-                style="@style/Widget.Material3.SearchBar"
-                android:elevation="6dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="종목 검색" />
-        </com.google.android.material.appbar.AppBarLayout>
 
         <com.google.android.material.search.SearchView
             android:id="@+id/searchView"

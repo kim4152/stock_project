@@ -1,8 +1,5 @@
-package com.project.stockproject.favorite
+package com.project.stockproject.favorite.editFolder
 
-import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.ColorFilter
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,7 +9,6 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
-import androidx.core.view.isInvisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -21,10 +17,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.stockproject.MainActivity
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
-import com.project.stockproject.common.BackKeyHandler
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.AddDialogBinding
-import com.project.stockproject.databinding.EditItemBinding
 import com.project.stockproject.databinding.FragmentEditBinding
 import com.project.stockproject.room.FolderTable
 import com.project.stockproject.room.transform
@@ -289,10 +283,8 @@ class EditFragment : Fragment() {
 
     private fun setBackpress() {
         callback = object : OnBackPressedCallback(true) {
-            val backKeyHandler = BackKeyHandler(activity)
             override fun handleOnBackPressed() {
                 // 뒤로 가기 버튼 처리
-
                 findNavController().navigate(R.id.action_editFragment_to_favoriteFragment)
             }
         }

@@ -18,6 +18,16 @@
         <item name="cornerSize">8dp</item>
     </style>
 
+    <!-- res/values/styles.xml -->
+    <style name="SlideUpDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+
+    <style name="MyBottomNavTextActive">
+        <item name="android:textSize">16sp</item> <!-- 원하는 글자 크기로 조절 -->
+    </style>
+
 
 
 

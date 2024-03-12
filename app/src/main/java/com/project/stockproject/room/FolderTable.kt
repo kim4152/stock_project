@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.project.stockproject.favorite.EditItem
+import com.project.stockproject.favorite.editFolder.EditItem
 
 @Entity(
     tableName = "folder",

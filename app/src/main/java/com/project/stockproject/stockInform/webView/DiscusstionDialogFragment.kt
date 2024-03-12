@@ -1,33 +1,54 @@
 package com.project.stockproject.stockInform.webView
 
+
+
+import android.app.Dialog
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
-import com.project.stockproject.MainActivity
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
-import com.project.stockproject.databinding.FragmentDiscussionBinding
+import com.project.stockproject.databinding.FragmentDiscusstionDialogBinding
 import com.project.stockproject.stockInform.TabViewModel
 
-class DiscussionFragment : Fragment() {
-    private lateinit var binding: FragmentDiscussionBinding
+
+class DiscusstionDialogFragment() : DialogFragment() {
+    private lateinit var binding: FragmentDiscusstionDialogBinding
     private lateinit var viewModel: TabViewModel
     private lateinit var myViewModel: MyViewModel
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        // 여백을 투명하게 설정
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        //애니메이션
+        dialog.window?.attributes?.windowAnimations=R.style.SlideUpDialogAnimation
+        return dialog
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val width = ViewGroup.LayoutParams.MATCH_PARENT
+        val height = ViewGroup.LayoutParams.MATCH_PARENT
+
+        dialog!!.window!!.setLayout(width, height)
+    }
+
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding= FragmentDiscussionBinding.inflate(layoutInflater,container,false)
+        binding= FragmentDiscusstionDialogBinding.inflate(layoutInflater,container,false)
         viewModel= ViewModelProviders.of(this)[TabViewModel::class.java]
         myViewModel= ViewModelProviders.of(this)[MyViewModel::class.java]
         return binding.root
@@ -35,7 +56,7 @@ class DiscussionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val stockCode= requireArguments().getString("stockCode")
+        val stockCode= requireArguments().getString("stock_code")
         val url = "https://finance.naver.com/item/board.naver?code=${stockCode}"
         webViewSet(url)
     }
@@ -65,18 +86,7 @@ class DiscussionFragment : Fragment() {
         webView.loadUrl(url)
     }
 
-    override fun onResume() {
-        super.onResume()
-        //bottom navigation 숨기기
-        val mainAct = activity as MainActivity
-        mainAct.HideBottomNavi(true)
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        //fragment 꺼질때 바텀네비 보이게
-        val mainAct = activity as MainActivity
-        mainAct.HideBottomNavi(false)
-    }
+
 
 
 }

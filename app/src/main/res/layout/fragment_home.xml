@@ -12,6 +12,7 @@
 
             <!-- Screen content goes here. -->
             <androidx.core.widget.NestedScrollView
+                android:id="@+id/nested"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fillViewport="true"
@@ -22,16 +23,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+                    <com.google.android.material.divider.MaterialDivider
+                        android:id="@+id/divider1"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginHorizontal="50dp"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
                     <TextView
                         android:id="@+id/majorIndexTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="17dp"
-                        android:text="주요지수 >"
+                        android:text="주요지수"
                         android:textSize="18sp"
-                        android:textStyle="bold"
+                        android:layout_marginTop="15dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@+id/divider1" />
 
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/majorIndexViewPager"
@@ -44,7 +54,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/majorIndexTextView" />
                     <!-- indicator -->
                     <LinearLayout
-                        android:id="@+id/indicators"
+                        android:id="@+id/majorIndicators"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
@@ -54,16 +64,85 @@
                         app:layout_constraintBottom_toBottomOf="@id/majorIndexViewPager"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/mfCons"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:background="?attr/colorTertiaryContainer"
+                        android:layout_marginTop="25dp"
+                        app:layout_constraintTop_toBottomOf="@id/majorIndicators">
+
+                        <TextView
+                            android:id="@+id/multiFactor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="17dp"
+                            android:text="멀티 팩터 포트폴리오"
+                            android:textColor="?attr/colorOnTertiaryContainer"
+                            android:textSize="18sp"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                        <ImageView
+                            android:id="@+id/mfHelp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            app:layout_constraintTop_toTopOf="@id/multiFactor"
+                            app:layout_constraintBottom_toBottomOf="@id/multiFactor"
+                            android:src="@drawable/baseline_help_24"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginRight="10dp"
+                            />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/multiFactorViewPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="50dp"
+                        app:layout_constraintTop_toTopOf="@id/mfCons"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
+                        android:overScrollMode="never"
+                        />
+                    <!-- indicator -->
+                    <LinearLayout
+                        android:id="@+id/mfIndicators"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="15dp"
+                        app:layout_constraintTop_toBottomOf="@id/multiFactorViewPager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
                     <TextView
-                        android:id="@+id/airecoTextview"
+                        android:id="@+id/rankingText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="17dp"
-                        android:text="AI 추천 >"
+                        android:text="예측가 랭킹"
                         android:textSize="18sp"
-                        android:textStyle="bold"
+                        android:layout_marginTop="20dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/majorIndexViewPager" />
+                        app:layout_constraintTop_toBottomOf="@+id/mfIndicators" />
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintTop_toBottomOf="@id/rankingText"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rankingRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:listitem="@layout/item_sub_tab"
+                        app:layout_constraintTop_toBottomOf="@+id/rankingText"/>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.core.widget.NestedScrollView>

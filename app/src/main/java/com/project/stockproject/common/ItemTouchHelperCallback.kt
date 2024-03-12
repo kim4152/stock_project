@@ -1,21 +1,14 @@
-package com.project.stockproject.favorite
+package com.project.stockproject.common
 
-import android.graphics.Canvas
-import android.util.Log
-import android.view.MotionEvent
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
-import androidx.recyclerview.widget.ItemTouchHelper.LEFT
-import androidx.recyclerview.widget.ItemTouchHelper.RIGHT
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.project.stockproject.common.MyApplication
-import kotlin.math.abs
+import com.project.stockproject.favorite.editItem.ItemTouchHelperListener
 
 class ItemTouchHelperCallback(
-    private val listener:ItemTouchHelperListener
+    private val listener: ItemTouchHelperListener
 ) : ItemTouchHelper.Callback() {
     override fun getMovementFlags(
         recyclerView: RecyclerView,

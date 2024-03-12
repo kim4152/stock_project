@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.common.BackKeyHandler
@@ -30,7 +31,6 @@ import com.project.stockproject.search.SearchHistory
 import com.project.stockproject.search.SearchHistoryManager
 import com.project.stockproject.search.SearchResult
 import com.project.stockproject.stockInform.chart.MakeChart
-import com.project.stockproject.stockInform.chart.StockInfoRequest
 import com.project.stockproject.stockInform.openai.ChatRequest
 import com.project.stockproject.stockInform.openai.MessageRequest
 import java.text.DecimalFormat
@@ -71,10 +71,9 @@ class StockInformFragment : Fragment() {
 
         try {
             //관심종목에서 왔을때
-            if (!requireArguments().getString("stockName").isNullOrEmpty()) {
+            if (!requireArguments().getString("folderName").isNullOrEmpty()) {
                 setBackpress("favorite") //뒤로가기 제어
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-
                 val name = requireArguments().getString("stockName")
                 val code = requireArguments().getString("stockCode")
                 val folderName = requireArguments().getString("folderName")
@@ -82,40 +81,32 @@ class StockInformFragment : Fragment() {
                 getStockCode = code.toString()
                 binding.searchBar.text = getStockName
                 getStockInform(folderName!!)
+            }else{
+                setBackpress("") //뒤로가기 제어
+                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+                val name = requireArguments().getString("stockName")
+                val code = requireArguments().getString("stockCode")
+                Log.d("dfasdf","1111")
+                getStockName = name.toString()
+                getStockCode = code.toString()
+                binding.searchBar.text = getStockName
+                getStockInform("search")
             }
             //아니라면 오류발생 ->
         } catch (e: Exception) {
             setBackpress("") //뒤로가기 제어
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-
+            Log.d("dfasdf","2222")
             getStockName = searchManager.getSearchHistory().first().stockName
             getStockCode = searchManager.getSearchHistory().first().stockCode
             binding.searchBar.text = getStockName
             getStockInform("search")
         }
 
-
+        hideBottom() //스크롤시 바텀 숨기기
         searchView()
         adapterSetting()
-    }
-
-    private fun setBackpress(from: String) {
-        callback = object : OnBackPressedCallback(true) {
-            val backKeyHandler = BackKeyHandler(activity)
-            override fun handleOnBackPressed() {
-                // 뒤로 가기 버튼 처리
-                if (from == "favorite") {
-                    findNavController().navigate(R.id.action_stockInformFragment_to_favoriteFragment)
-                } else {
-                    findNavController().navigate(R.id.action_stockInformFragment_to_homeFragment)
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.searchView.hide()
     }
 
 
@@ -125,6 +116,10 @@ class StockInformFragment : Fragment() {
             //최근검색기록 10개의 주식 정보 받아오기
             searchManager.getSearchHistory().forEach {
                 stockList.add(StockList(it.stockCode, it.stockName))
+            }
+            //검색이 아니라 멀티 팩터에서 왔을때
+            if (getStockCode!=stockList[0].stockCode){
+                stockList.add(0, StockList(getStockCode,getStockName))
             }
             sendViewModelData()
         } else {
@@ -171,14 +166,16 @@ class StockInformFragment : Fragment() {
     //주요지수 뷰 페이저 어댑터 세팅
     private fun viewPagerSetting() {
         pagerAdapter = StockInformViewPagerAdapter(mutableListOf(), favoriteClick = {
-            val stockName = searchManager.getStockNameByCode(it)
-            if (stockName != null) {
-                val bundle = bundleOf("stock_name" to stockName, "stock_code" to it)
-                findNavController().navigate(
-                    R.id.action_stockInformFragment_to_customDialogFavorite,
-                    bundle
-                )
-            }
+
+            viewModel.getStockNameByCode(it).observe(this, Observer {stockName->
+                if (stockName != null) {
+                    val bundle = bundleOf("stock_name" to stockName, "stock_code" to it)
+                    findNavController().navigate(
+                        R.id.action_stockInformFragment_to_customDialogFavorite,
+                        bundle
+                    )
+                }
+            })
         })
 
         viewPager2.apply {
@@ -298,9 +295,19 @@ class StockInformFragment : Fragment() {
     ///////////////////////////////////////////////////////////
     private fun setChart(stockCode: String, stockName: String) {
         tabViewModel.cancelPredicCall() //예측값 찾는 Call 중지
+        initAnal() //AI 매매 성과 text 초기화
         val marketName = pagerAdapter.getList()[currentPosition].rprs_mrkt_kor_name
-        val makeChart = MakeChart(stockCode, binding.combinedChart, tabViewModel, this, marketName)
+        val makeChart = MakeChart(stockCode, binding, tabViewModel, this, marketName)
         makeChart.init()
+    }
+
+    private fun initAnal(){
+        binding.progressIndicator.visibility=View.VISIBLE
+        binding.circle1.text=""
+        binding.circle2.text=""
+        binding.predicPriceText.text=""
+        binding.predicPriceText1.text=""
+        binding.predicPriceText2.text=""
     }
 
     //open ai
@@ -365,11 +372,60 @@ class StockInformFragment : Fragment() {
 
     private fun stockDiscussionClick() {
         val stockCode = pagerAdapter.getList()[currentPosition].stck_shrn_iscd
+        val bundle = bundleOf("stock_code" to stockCode )
+        findNavController().navigate(R.id.action_stockInformFragment_to_discusstionDialogFragment2,bundle)
+    }
 
-        val bundle = bundleOf("stockCode" to stockCode)
-        findNavController().navigate(R.id.action_stockInformFragment_to_discussionFragment, bundle)
+    private fun hideBottom(){
+        var down = true
+        var height:Float? = null
+        val bottomNavView = requireActivity().findViewById(R.id.bottom_navigation) as BottomNavigationView
+
+        view?.post {
+            height = bottomNavView.height.toFloat()
+        }
+
+        // 스크롤 리스너 설정
+        val nestedScrollView = binding.nested
+        nestedScrollView.setOnScrollChangeListener { _, _, scY, _, odscY ->
+            if (height == null) {
+                height = bottomNavView.height.toFloat()
+            }
+            if (scY > odscY) {
+                if (down) {
+                    down = false
+                    bottomNavView.visibility=View.GONE
+                }
+            } else {
+                if (!down) {
+                    down = true
+                    bottomNavView.visibility=View.VISIBLE
+                }
+            }
+        }
+
+    }
+
+
+    private fun setBackpress(from: String) {
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val bottomNavView = requireActivity().findViewById(R.id.bottom_navigation) as BottomNavigationView
+                // 뒤로 가기 버튼 처리
+                if (from == "favorite") {
+                    findNavController().navigate(R.id.action_stockInformFragment_to_favoriteFragment)
+                    bottomNavView.visibility=View.VISIBLE
+                } else {
+                    findNavController().navigate(R.id.action_stockInformFragment_to_homeFragment)
+                    bottomNavView.visibility=View.VISIBLE
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.searchView.hide()
     }
 
 }
-
-

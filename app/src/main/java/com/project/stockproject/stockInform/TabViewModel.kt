@@ -13,7 +13,6 @@ import com.project.stockproject.stockInform.chart.CurrentChart
 import com.project.stockproject.stockInform.chart.GetCurrentChart
 import com.project.stockproject.stockInform.chart.PredictionData
 import com.project.stockproject.stockInform.chart.PriceDTO
-import com.project.stockproject.stockInform.chart.StockInfoRequest
 import com.project.stockproject.stockInform.openai.ChatCompletionResponse
 import com.project.stockproject.stockInform.openai.ChatRequest
 import com.project.stockproject.stockInform.openai.FocusAreasResponse
@@ -85,9 +84,9 @@ class TabViewModel : ViewModel() {
     }
 
     private  var getPredicCall: Call<PredictionData> ?= null
-     fun getPredicChart(stockInfoRequest: StockInfoRequest):MutableLiveData<PredictionData>{
+     fun getPredicChart(stockCode: String,marketCode:String):MutableLiveData<PredictionData>{
          val liveData: MutableLiveData<PredictionData> = MutableLiveData()
-         getPredicCall = awsEC2Retrofit.getStockInfo(stockInfoRequest)
+         getPredicCall = awsEC2Retrofit.getStockInfo(stockCode,marketCode)
         getPredicCall?.enqueue(object : Callback<PredictionData>{
             override fun onResponse(
                 call: Call<PredictionData>,

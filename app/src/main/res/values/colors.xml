@@ -14,6 +14,9 @@
     <color name="down">@color/md_theme_light_primary</color>
     <color name="white">#FFFFFF</color>
     <color name="gray">#808080</color>
+    <color name="tertiary">#6B5778</color>
+    <color name="error">#BA1A1A</color>
+    <color name="outlineVariant">#C3C6CF</color>
 
 
     <color name="seed">#0d61a4</color>

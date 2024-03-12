@@ -24,11 +24,12 @@ class FavoriteAdapter(
 ) :
     FragmentStateAdapter(fragmentActivity) {
     override fun getItemCount(): Int {
-        return Int.MAX_VALUE
+        return adapter.size
     }
 
     override fun createFragment(position: Int): Fragment {
         if (adapter.isNotEmpty()){
+            Log.d("dsfsadfasdf",position.toString())
             return SubFragment(adapter[position%adapter.size])
         }else{
             return SubFragment(adapter[0])

@@ -1,10 +1,7 @@
-package com.project.stockproject.favorite
+package com.project.stockproject.favorite.editFolder
 
 import android.app.Dialog
-import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +9,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import com.project.stockproject.MainActivity
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.databinding.FragmentDialogFolderRenameBinding
