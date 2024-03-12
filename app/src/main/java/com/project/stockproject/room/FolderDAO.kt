@@ -1,11 +1,9 @@
 package com.project.stockproject.room
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+
 @Dao
 interface FolderDAO {
     @Query("SELECT * FROM folder ORDER BY `index` ASC")

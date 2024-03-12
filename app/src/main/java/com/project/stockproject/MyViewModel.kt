@@ -2,19 +2,13 @@ package com.project.stockproject
 
 import android.content.Context
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
-import androidx.viewpager2.widget.CompositePageTransformer
-import androidx.viewpager2.widget.MarginPageTransformer
-import androidx.viewpager2.widget.ViewPager2
 import com.project.stockproject.common.GetToken
 import com.project.stockproject.common.MyApplication
-import com.project.stockproject.favorite.FavoriteDialogAdapter
-import com.project.stockproject.favorite.SubFragment
 import com.project.stockproject.home.MFItem
 import com.project.stockproject.home.MajorIndexViewPagerDTO
 import com.project.stockproject.home.Predic
@@ -24,25 +18,18 @@ import com.project.stockproject.room.FavoriteDB
 import com.project.stockproject.room.FolderTable
 import com.project.stockproject.room.ItemTable
 import com.project.stockproject.search.AwsAPIStockInfo
-import com.project.stockproject.search.HistoryManager
 import com.project.stockproject.search.Search
-
 import com.project.stockproject.stockInform.StockInformItem
-import com.project.stockproject.stockInform.StockInformViewPagerAdapter
 import com.project.stockproject.stockInform.StockList
 import com.project.stockproject.stockInform.StockOutput
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.URL
-import kotlin.math.abs
 
 class MyViewModel : ViewModel() {
     companion object {

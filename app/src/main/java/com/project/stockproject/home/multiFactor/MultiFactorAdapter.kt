@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
-import com.project.stockproject.common.MyApplication.context
 import com.project.stockproject.databinding.ItemMultiFactorBinding
 import com.project.stockproject.home.MFItem
 import java.text.DecimalFormat

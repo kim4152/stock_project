@@ -10,10 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
-import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FavoriteViewpagerBinding
 import com.project.stockproject.room.FolderTable
 import com.project.stockproject.room.ItemTable

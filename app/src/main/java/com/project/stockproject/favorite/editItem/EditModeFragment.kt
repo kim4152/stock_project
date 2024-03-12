@@ -2,11 +2,11 @@ package com.project.stockproject.favorite.editItem
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -16,9 +16,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.stockproject.MainActivity
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
+import com.project.stockproject.common.ItemTouchHelperCallback
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FragmentEditModeBinding
-import com.project.stockproject.common.ItemTouchHelperCallback
 import com.project.stockproject.room.ItemTable
 
 class EditModeFragment : Fragment() {

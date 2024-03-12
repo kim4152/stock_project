@@ -1,10 +1,8 @@
 package com.project.stockproject.stockInform.chart
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.core.content.ContextCompat
-import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight

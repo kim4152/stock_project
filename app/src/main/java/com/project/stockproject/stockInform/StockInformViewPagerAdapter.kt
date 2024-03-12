@@ -1,16 +1,12 @@
 package com.project.stockproject.stockInform
 
-import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
-import com.project.stockproject.databinding.MajorIndexItemBinding
 import com.project.stockproject.databinding.StockInformItemBinding
-import com.project.stockproject.home.MajorIndexViewPagerAdapter
 import java.text.DecimalFormat
 
 class StockInformViewPagerAdapter(private var adapterList: MutableList<StockOutput>,

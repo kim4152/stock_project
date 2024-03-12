@@ -5,7 +5,6 @@ import com.project.stockproject.home.MFItem
 import com.project.stockproject.home.Predic
 import com.project.stockproject.search.AwsAPIStockInfo
 import com.project.stockproject.stockInform.StockInformItem
-import com.project.stockproject.stockInform.StockList
 import com.project.stockproject.stockInform.chart.GetCurrentChart
 import com.project.stockproject.stockInform.chart.PredictionData
 import com.project.stockproject.stockInform.disclosure.CorpCode
@@ -15,7 +14,6 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-
 import retrofit2.http.Query
 
 interface RetrofitService {

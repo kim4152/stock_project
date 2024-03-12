@@ -1,7 +1,5 @@
 package com.project.stockproject.stockInform
 
-import com.project.stockproject.room.ItemTable
-
 
 data class StockInformItem(
     val output: StockOutput,

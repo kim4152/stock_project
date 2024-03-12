@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.retrofit.RetrofitService
-import com.project.stockproject.search.AwsAPIStockInfo
 import com.project.stockproject.stockInform.chart.CurrentAdditional
 import com.project.stockproject.stockInform.chart.CurrentChart
 import com.project.stockproject.stockInform.chart.GetCurrentChart

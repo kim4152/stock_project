@@ -2,8 +2,6 @@ package com.project.stockproject.home.tabLayout
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.ColorInt
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -12,7 +10,6 @@ import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.ItemSubTabBinding
 import com.project.stockproject.home.Predic
-import com.project.stockproject.stockInform.StockOutput
 import java.text.DecimalFormat
 
 class RankingAdapter(val onClick:(Predic)->Unit) :

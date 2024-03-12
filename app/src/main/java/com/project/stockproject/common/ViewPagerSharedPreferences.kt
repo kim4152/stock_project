@@ -2,7 +2,6 @@ package com.project.stockproject.common
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 
 class ViewPagerSharedPreferences(context: Context) {
     private val prefs: SharedPreferences =

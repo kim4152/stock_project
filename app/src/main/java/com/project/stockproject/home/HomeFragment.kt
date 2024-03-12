@@ -1,7 +1,6 @@
 package com.project.stockproject.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.common.BackKeyHandler

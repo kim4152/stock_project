@@ -4,7 +4,6 @@ import android.view.View
 import android.webkit.WebChromeClient
 import android.widget.FrameLayout
 import androidx.fragment.app.FragmentActivity
-import com.project.stockproject.stockInform.webView.CustomWebView
 
 
 class MyChrome(private val webView: CustomWebView, private val activity: FragmentActivity?) : WebChromeClient() {

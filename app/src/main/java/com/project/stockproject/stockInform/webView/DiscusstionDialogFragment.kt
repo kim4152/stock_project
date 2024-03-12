@@ -12,7 +12,6 @@ import android.view.WindowManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R

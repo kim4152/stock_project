@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.CustomDialogAddFavoriteBinding
-import com.project.stockproject.room.FolderTable
 
 
 class CustomDialogFavorite() : DialogFragment() {

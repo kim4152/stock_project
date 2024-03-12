@@ -1,21 +1,15 @@
 package com.project.stockproject.favorite
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.SubadapterItemBinding
-import com.project.stockproject.search.SearchHistoryManager
 import java.text.DecimalFormat
-import java.util.Collections
 
 
 class SubAdapter(

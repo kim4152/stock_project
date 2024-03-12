@@ -19,12 +19,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
-import com.project.stockproject.common.BackKeyHandler
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.FragmentStockInformBinding
-import com.project.stockproject.favorite.SubFragment
 import com.project.stockproject.room.ItemTable
-import com.project.stockproject.search.HistoryManager
 import com.project.stockproject.search.Search
 import com.project.stockproject.search.SearchAdapter
 import com.project.stockproject.search.SearchHistory

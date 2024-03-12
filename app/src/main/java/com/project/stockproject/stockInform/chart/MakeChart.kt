@@ -9,7 +9,6 @@ import android.text.style.StyleSpan
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.github.mikephil.charting.charts.CombinedChart

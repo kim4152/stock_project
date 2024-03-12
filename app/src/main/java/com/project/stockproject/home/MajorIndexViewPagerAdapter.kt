@@ -1,12 +1,10 @@
 package com.project.stockproject.home
 
-import com.project.stockproject.R
-import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication.getAppContext
 import com.project.stockproject.databinding.MajorIndexItemBinding
 
