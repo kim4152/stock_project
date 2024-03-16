@@ -13,3 +13,12 @@ data class Headers(
 data class ResponseBody(
     val accessToken: String
 )
+
+data class GetIPv4(
+    val statusCode: Int,
+    val body:String,
+)
+data class InfoCheck(
+    val statusCode: Int,
+    val body:String,
+)

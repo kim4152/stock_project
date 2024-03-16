@@ -13,7 +13,7 @@ class MFCustomDialog:DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         // 여백을 투명하게 설정
-        //dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         //애니메이션
         //dialog.window?.attributes?.windowAnimations= R.style.SlideUpDialogAnimation
         return dialog

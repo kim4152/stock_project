@@ -14,11 +14,12 @@ import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.ItemMultiFactorBinding
 import com.project.stockproject.home.MFItem
+import com.project.stockproject.retrofit.RetrofitFactory
 import java.text.DecimalFormat
 
 class MultiFactorAdapter(
-    val onClick: (MFItem)->Unit,val index:Int,
-    val viewModel:MyViewModel,val lifecycleOwner: LifecycleOwner
+    val onClick: (MFItem)->Unit, val index:Int,
+    val viewModel:MyViewModel, private val lifecycleOwner: LifecycleOwner
 ) : ListAdapter<MFItem, MultiFactorAdapter.ViewHolder>(diffUtil) {
 
     inner class ViewHolder(val binding: ItemMultiFactorBinding) :
@@ -27,7 +28,6 @@ class MultiFactorAdapter(
             binding.root.setOnClickListener { onClick(item) }//종목 클릭시
             binding.number.text=position.toString()
             binding.stockName.text = item.stock_name
-            Log.d("dafdfdf","${position}: ${item.stock_name}")
             showNowPrice(binding, item)
         }
     }
@@ -36,7 +36,7 @@ class MultiFactorAdapter(
         val stockCode = item.stock_code
         val df = DecimalFormat("#,###") //세자리마다 콤마 찍기
         binding.apply {
-
+            Log.d("dasfsdf","4.MFAdapter.observer:${RetrofitFactory.TOKEN}")
             viewModel.stockInform(stockCode).observe(lifecycleOwner, Observer {
                 if (it!=null){
                     price.text = df.format(it.stck_prpr.toInt())//현재가
@@ -121,6 +121,9 @@ class MultiFactorAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
+        Log.d("dasfsdf","3.MFAdapter:${currentList.toString()}")
+
         return ViewHolder(
             ItemMultiFactorBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false

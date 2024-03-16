@@ -1,9 +1,11 @@
 package com.project.stockproject.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
@@ -11,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -18,11 +21,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
 import com.project.stockproject.common.BackKeyHandler
 import com.project.stockproject.common.CustomDecoration
 import com.project.stockproject.common.MyApplication
+import com.project.stockproject.common.SharedViewModel
 import com.project.stockproject.databinding.FragmentHomeBinding
 import com.project.stockproject.home.multiFactor.MultiFactorViewPager
 import com.project.stockproject.home.tabLayout.RankingAdapter
@@ -40,6 +48,7 @@ class HomeFragment : Fragment() {
     private lateinit var searchManager: SearchHistoryManager
     private lateinit var searchAdapter: SearchAdapter
     private lateinit var callback: OnBackPressedCallback
+    private val sharedViewModel: SharedViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,7 +57,7 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
         return binding?.root
     }
-
+    @ExperimentalBadgeUtils
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(this)[MyViewModel::class.java] //viewModel 정의
@@ -57,13 +66,61 @@ class HomeFragment : Fragment() {
         setupOnBoardingIndicators() //indicator init
         adapterSetting()//searchView adapter
         searchView() //searchView setting
-        setMultiFactor() //멀티팩터포토폴리오
-        setRanking() //탭 레이아웃(예상가격,상승률,거래량)
+
+        sharedViewModel.checkToken.observe(viewLifecycleOwner){
+            //토큰이 발급 된 후 실행
+            if (it=="ok"){
+                setMultiFactor() //멀티팩터포토폴리오
+            }
+        }
+        infoCheck()
+
+        setRanking() //(예상가격 랭킹)
 
         setBackpress() //뒤로가기 설정
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+    }
+
+    private var infoString =""
+    private lateinit var badge: BadgeDrawable
+    @ExperimentalBadgeUtils
+    private fun infoCheck(){
+        viewModel.infoCheck().observe(this, Observer {
+            Log.d("adffsf",it+"@@")
+            infoString=it
+            if (it.isNotBlank()){
+                badge()
+                binding.homeInfo.visibility = View.VISIBLE
+
+            }
+        })
+        binding.homeInfo.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setMessage(infoString)
+                .setPositiveButton("확인"){_,_->
+                    binding.homeInfo.visibility=View.GONE
+                    badge?.let {
+                        it.setVisible(false,false)
+                    }
+                }
+                .show()
+        }
+    }
+
+    @ExperimentalBadgeUtils
+    private fun badge(){
+        badge=BadgeDrawable.create(requireContext())
+        badge.apply {
+            backgroundColor = ContextCompat.getColor(requireContext(), R.color.up)
+            badgeGravity = BadgeDrawable.TOP_END
+        }.let {
+            binding.frameLayout.foreground = it
+            binding.frameLayout.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                BadgeUtils.attachBadgeDrawable(it, binding.homeInfo, binding.frameLayout)
+            }
+        }
     }
 
     private lateinit var rankingAdapter:RankingAdapter
@@ -87,11 +144,13 @@ class HomeFragment : Fragment() {
     private lateinit var multiFactorViewPager: MultiFactorViewPager
     private fun setMultiFactor() {
         binding.mfHelp.setOnClickListener { mfHelp() } //?버튼 클릭
+
         viewModel.getMultiFactor().observe(this, Observer {
 
             val mfViewPager: ViewPager2 = binding.multiFactorViewPager
             mfViewPager.apply {
                 setPadding(40, 0, 40, 0)
+                Log.d("dasfsdf","1.viewPager:${it.toString()}")
                 multiFactorViewPager = MultiFactorViewPager(activity!!, it)
                 adapter = multiFactorViewPager
 

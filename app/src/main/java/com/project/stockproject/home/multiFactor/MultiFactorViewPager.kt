@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.project.stockproject.home.MFItem
 
-class MultiFactorViewPager(private val fragmentActivity: FragmentActivity,
+class MultiFactorViewPager(fragmentActivity: FragmentActivity,
     val list: List<MFItem>
     )
     :FragmentStateAdapter(fragmentActivity) {

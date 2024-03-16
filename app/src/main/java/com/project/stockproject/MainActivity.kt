@@ -7,17 +7,22 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.project.stockproject.common.MyApplication
+import com.project.stockproject.common.SharedViewModel
 import com.project.stockproject.databinding.ActivityMainBinding
 import com.project.stockproject.retrofit.RetrofitFactory
+import com.project.stockproject.retrofit.RetrofitFactory.AWS_EC2_URL
 import com.project.stockproject.search.SearchAdapter
 import com.project.stockproject.search.SearchHistoryManager
 
@@ -28,12 +33,18 @@ class MainActivity : AppCompatActivity()  {
     private lateinit var viewModel: MyViewModel
     private lateinit var searchManager : SearchHistoryManager
     private lateinit var navController: NavController
+    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MyApplication.onCreate1(applicationContext)//전역 Context 설정
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        viewModel = ViewModelProviders.of(this)[MyViewModel::class.java] //viewModel 정의
+        getToken() //한국투자증권 토큰 발급
+        getIPv4() //IP 주소 얻기
+
         showAni(isInternetConnected())//처음 앱  켰을 떄 인터넷 확인
         networkChecking() //네트워크 변화 상태 학인
         // NavController 초기화
@@ -46,16 +57,20 @@ class MainActivity : AppCompatActivity()  {
 
        // setBottomNavigation(bottomNav)//바텀 네비게이션
         searchManager= SearchHistoryManager(MyApplication.getAppContext())
-        viewModel = ViewModelProviders.of(this)[MyViewModel::class.java] //viewModel 정의
 
-        getToken() //한국투자증권 토큰 발급
         getInform() //알림
-
-
     }
 
     private fun getInform(){
 
+    }
+    private fun getIPv4(){
+        viewModel.getIpv4().observe(this, Observer {
+            Log.d("dsfadsfs","null")
+            AWS_EC2_URL=it
+            Log.d("dsfadsfsasdfsdf",it)
+            Log.d("dsfadsfsasdfsdf", AWS_EC2_URL)
+        })
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -72,6 +87,7 @@ class MainActivity : AppCompatActivity()  {
                 MyApplication.makeToast("현재 발급받은 토큰이 없습니다")
             }else{
                 RetrofitFactory.TOKEN =it
+                sharedViewModel.checkTokenOk("ok")
             }
 
         })

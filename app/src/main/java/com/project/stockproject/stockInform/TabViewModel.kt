@@ -85,6 +85,7 @@ class TabViewModel : ViewModel() {
     private  var getPredicCall: Call<PredictionData> ?= null
      fun getPredicChart(stockCode: String,marketCode:String):MutableLiveData<PredictionData>{
          val liveData: MutableLiveData<PredictionData> = MutableLiveData()
+         val a = RetrofitFactory.AWS_EC2_URL
          getPredicCall = awsEC2Retrofit.getStockInfo(stockCode,marketCode)
         getPredicCall?.enqueue(object : Callback<PredictionData>{
             override fun onResponse(
@@ -94,7 +95,9 @@ class TabViewModel : ViewModel() {
                 val result=response.body()
                 liveData.postValue(result)
             }
-            override fun onFailure(call: Call<PredictionData>, t: Throwable) {}
+            override fun onFailure(call: Call<PredictionData>, t: Throwable) {
+                val a = t
+            }
 
         })
          return  liveData

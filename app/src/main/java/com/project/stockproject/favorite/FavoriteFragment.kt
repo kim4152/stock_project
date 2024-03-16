@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.project.stockproject.MyViewModel
 import com.project.stockproject.R
+import com.project.stockproject.common.SharedViewModel
 import com.project.stockproject.common.ViewPagerSharedPreferences
 import com.project.stockproject.databinding.FragmentFavoriteBinding
 import com.project.stockproject.room.FolderTable
@@ -23,8 +25,11 @@ class FavoriteFragment : Fragment() {
     private lateinit var binding: FragmentFavoriteBinding
 
     private lateinit var viewModel: MyViewModel
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+
     private lateinit var sharedPreferences: ViewPagerSharedPreferences
     private lateinit var favoriteAdapter: FavoriteAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,12 +81,13 @@ class FavoriteFragment : Fragment() {
 
         chip1.setOnClickListener {
             if (chip1.isChecked) {
-
                 chip1.isChecked = true
                 chip2.isChecked = false
+                sharedViewModel.updateData("current")
             } else {
                 chip1.isChecked = false
                 chip2.isChecked = true
+                sharedViewModel.updateData("predic")
             }
         }
 
@@ -89,10 +95,11 @@ class FavoriteFragment : Fragment() {
             if (chip2.isChecked) {
                 chip1.isChecked = false
                 chip2.isChecked = true
+                sharedViewModel.updateData("predic")
             } else {
-
                 chip1.isChecked = true
                 chip2.isChecked = false
+                sharedViewModel.updateData("current")
             }
         }
     }
@@ -126,6 +133,7 @@ class FavoriteFragment : Fragment() {
                 })
                 val pos = sharedPreferences.getPosition("viewPager33")
                 setCurrentItem(pos, true)
+                sharedViewModel.updateData("current") //관심종목 리스트 현재가로 세팅
             }
         }
 
@@ -136,9 +144,5 @@ class FavoriteFragment : Fragment() {
     private fun viewPagerSetting() {
         viewModel.getAll()
         viewModel.getAllResult.observe(this, viewPagerObserver)
-
     }
-
-
-
 }

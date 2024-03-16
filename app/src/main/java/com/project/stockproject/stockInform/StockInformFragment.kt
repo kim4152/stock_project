@@ -100,8 +100,6 @@ class StockInformFragment : Fragment() {
             binding.searchBar.text = getStockName
             getStockInform("search")
         }
-
-        hideBottom() //스크롤시 바텀 숨기기
         searchView()
         adapterSetting()
     }
@@ -301,7 +299,6 @@ class StockInformFragment : Fragment() {
     private fun initAnal(){
         binding.progressIndicator.visibility=View.VISIBLE
         binding.circle1.text=""
-        binding.circle2.text=""
         binding.predicPriceText.text=""
         binding.predicPriceText1.text=""
         binding.predicPriceText2.text=""
@@ -349,7 +346,7 @@ class StockInformFragment : Fragment() {
                 }조 ${df.format(numberList.substring(numberList.length - 4).toInt())}억"
             } else {
                 //억단위
-                return "${numberList}억"
+                return "${df.format(numberList.toInt())}억"
             }
         }
     }
@@ -373,35 +370,7 @@ class StockInformFragment : Fragment() {
         findNavController().navigate(R.id.action_stockInformFragment_to_discusstionDialogFragment2,bundle)
     }
 
-    private fun hideBottom(){
-        var down = true
-        var height:Float? = null
-        val bottomNavView = requireActivity().findViewById(R.id.bottom_navigation) as BottomNavigationView
 
-        view?.post {
-            height = bottomNavView.height.toFloat()
-        }
-
-        // 스크롤 리스너 설정
-        val nestedScrollView = binding.nested
-        nestedScrollView.setOnScrollChangeListener { _, _, scY, _, odscY ->
-            if (height == null) {
-                height = bottomNavView.height.toFloat()
-            }
-            if (scY > odscY) {
-                if (down) {
-                    down = false
-                    bottomNavView.visibility=View.GONE
-                }
-            } else {
-                if (!down) {
-                    down = true
-                    bottomNavView.visibility=View.VISIBLE
-                }
-            }
-        }
-
-    }
 
 
     private fun setBackpress(from: String) {

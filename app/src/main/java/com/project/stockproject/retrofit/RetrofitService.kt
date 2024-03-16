@@ -1,6 +1,8 @@
 package com.project.stockproject.retrofit
 
+import com.project.stockproject.common.GetIPv4
 import com.project.stockproject.common.GetToken
+import com.project.stockproject.common.InfoCheck
 import com.project.stockproject.home.MFItem
 import com.project.stockproject.home.Predic
 import com.project.stockproject.search.AwsAPIStockInfo
@@ -21,6 +23,12 @@ interface RetrofitService {
     //한국투자증권 토큰발급
     @POST("ndAWS-1/getToken")
     fun getToken(): Call<GetToken>
+
+    @POST("ndAWS-1/getIPv4")
+    fun getIpv4():Call<GetIPv4>
+
+    @GET("ndAWS-1/getInfo")
+    fun getInfo():Call<InfoCheck>
 
     //검색창
     @GET("ndAWS-1/getInfoByName")
@@ -70,4 +78,8 @@ interface RetrofitService {
     //예측가 상위 n개
     @GET("ndAWS-1/get-predic")
     fun getPredic(@Query("limit") limit:String): Call<List<Predic>>
+
+    //개별 종목 예측가 얻기
+    @GET("ndAWS-1/get-predic-each")
+    fun getPredicEach(@Query("stock_code") stockCode: String): Call<List<Predic>>
 }

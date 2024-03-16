@@ -499,13 +499,11 @@ class MakeChart(
         predictedPrices.removeAt(predictedPrices.size - 1)
 
         val a = calculateRMSE(actualPrices, predictedPrices.toList()) //평균제곱근오차
-        val b = calculateCumulativeReturns(actualPrices, predictedPrices.toList()) //누적수익률
 
         val df = DecimalFormat("#.##") //소숫점 두자리 반올림
         val df2 = DecimalFormat("#,###") //세자리마다 콤마 찍기
 
         binding.circle1.text="${df2.format(a.toInt())}원"
-        binding.circle2.text="${df.format(b[b.size-1])}%"
     }
 
     //평균제곱근오차
@@ -526,30 +524,7 @@ class MakeChart(
         return rmse
     }
 
-    //누적 수익률
-    fun calculateCumulativeReturns(
-        actualPrices: List<Float>,
-        predictedPrices: List<Float>
-    ): List<Float> {
-        require(actualPrices.size == predictedPrices.size) { "두 리스트의 길이가 동일해야 합니다." }
-
-        val n = actualPrices.size
-        val cumulativeReturns = mutableListOf<Float>()
-
-        // 첫 번째 날의 수익률은 0으로 초기화
-        cumulativeReturns.add(0.0f)
-
-        // 주가 데이터를 기반으로 누적 수익률 계산
-        for (i in 1 until n) {
-            val actualReturn = (actualPrices[i] - actualPrices[i - 1]) / actualPrices[i - 1]
-            val predictedReturn = (predictedPrices[i] - actualPrices[i - 1]) / actualPrices[i - 1]
-            val dailyReturnDiff = predictedReturn - actualReturn
-            val cumulativeReturn = cumulativeReturns[i - 1] + dailyReturnDiff
-            cumulativeReturns.add(cumulativeReturn)
-        }
-
-        return cumulativeReturns
-    }
+    
 
 
     //x축 label 설정

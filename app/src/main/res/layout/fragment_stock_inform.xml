@@ -147,28 +147,6 @@
                     android:layout_marginHorizontal="15dp"
                     android:gravity="center_vertical"/>
 
-                <TextView
-                    android:id="@+id/circle2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/background_oval"
-                    app:layout_constraintTop_toBottomOf="@id/circle1"
-                    app:layout_constraintStart_toStartOf="@id/circle1"
-                    tools:text="83%"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center_vertical|center"/>
-                <TextView
-                    android:id="@+id/circleText2"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintTop_toTopOf="@id/circle2"
-                    app:layout_constraintBottom_toBottomOf="@id/circle2"
-                    app:layout_constraintStart_toEndOf="@id/circle2"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:text="@string/andy"
-                    android:layout_marginHorizontal="15dp"
-                    android:gravity="center_vertical"/>
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

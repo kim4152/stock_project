@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
+import com.project.stockproject.common.GetIPv4
 import com.project.stockproject.common.GetToken
+import com.project.stockproject.common.InfoCheck
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.home.MFItem
 import com.project.stockproject.home.MajorIndexViewPagerDTO
@@ -58,6 +60,36 @@ class MyViewModel : ViewModel() {
             override fun onFailure(call: Call<GetToken>, t: Throwable) {
                 t
             }
+        })
+        return liveData
+    }
+
+    //ipv4 얻기
+    fun getIpv4():MutableLiveData<String>{
+        var liveData = MutableLiveData<String>()
+        awsAPIRetrofit.getIpv4().enqueue(object : Callback<GetIPv4>{
+            override fun onResponse(call: Call<GetIPv4>, response: Response<GetIPv4>) {
+                liveData.postValue(response.body()?.body)
+            }
+
+            override fun onFailure(call: Call<GetIPv4>, t: Throwable) {
+            }
+        })
+        return liveData
+    }
+
+    //알림 체크
+    fun infoCheck():MutableLiveData<String>{
+        var liveData = MutableLiveData<String>()
+        awsAPIRetrofit.getInfo().enqueue(object :Callback<InfoCheck>{
+            override fun onResponse(call: Call<InfoCheck>, response: Response<InfoCheck>) {
+                liveData.postValue(response.body()?.body)
+            }
+
+            override fun onFailure(call: Call<InfoCheck>, t: Throwable) {
+
+            }
+
         })
         return liveData
     }
@@ -213,6 +245,7 @@ class MyViewModel : ViewModel() {
                 call: Call<StockInformItem>,
                 response: Response<StockInformItem>
             ) {
+                val a = response.body()?.output
                 liveData.postValue(response.body()?.output)
             }
 
@@ -282,6 +315,22 @@ class MyViewModel : ViewModel() {
             }
 
             override fun onFailure(call: Call<List<Predic>>, t: Throwable) {
+            }
+
+        })
+        return liveData
+    }
+
+    //개별 종목 예측가
+    fun getPredicEach(stockCode: String):MutableLiveData<Predic>{
+        var liveData = MutableLiveData<Predic>()
+        awsAPIRetrofit.getPredicEach(stockCode).enqueue(object : Callback<List<Predic>>{
+            override fun onResponse(call: Call<List<Predic>>, response: Response<List<Predic>>) {
+                liveData.postValue(response.body()?.get(0) ?: null)
+            }
+
+            override fun onFailure(call: Call<List<Predic>>, t: Throwable) {
+
             }
 
         })
@@ -430,5 +479,5 @@ class MyViewModel : ViewModel() {
             db.itemDAO().updateOrder(folderName, stockName, index)
         }.start()
     }
-
+///////////////////////////////////////////
 }
