@@ -138,6 +138,14 @@ class HomeFragment : Fragment() {
         viewModel.topPredic("3000").observe(this, Observer {
             rankingAdapter.submitList(it)
         })
+        binding.rankingInfo.setOnClickListener { rankingInfo() }
+    }
+
+    private fun rankingInfo(){
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage("매일 17시에 업데이트 됩니다")
+            .setPositiveButton("확인"){_,_->}
+            .show()
     }
 
     //멀티팩터포토폴리오

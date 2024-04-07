@@ -169,7 +169,7 @@
                         android:singleLine="true"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="이름변경"
+                        android:text="변경"
                         android:gravity="center"
                         app:layout_constraintTop_toBottomOf="@id/rename"
                         app:layout_constraintStart_toStartOf="@id/rename"
@@ -178,12 +178,11 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.bottomappbar.BottomAppBar>
 
-            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/iconAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:icon="@drawable/baseline_add_24"
-                android:text="그룹추가"
+                android:src="@drawable/baseline_add_24"
                 app:layout_anchor="@id/bottomAppBar"
                 />
 

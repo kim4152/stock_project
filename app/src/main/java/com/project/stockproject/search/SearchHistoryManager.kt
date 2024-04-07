@@ -9,7 +9,7 @@ import com.google.gson.reflect.TypeToken
 
 class SearchHistoryManager(private val context: Context) {
 
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("search_history_queue1", Context.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("search_history_queue2", Context.MODE_PRIVATE)
     private val gson = Gson()
 
     fun addSearchHistory(stockName: String, stockCode: String) {

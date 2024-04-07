@@ -22,7 +22,8 @@ import com.project.stockproject.common.MyApplication
 import com.project.stockproject.common.SharedViewModel
 import com.project.stockproject.databinding.ActivityMainBinding
 import com.project.stockproject.retrofit.RetrofitFactory
-import com.project.stockproject.retrofit.RetrofitFactory.AWS_EC2_URL
+import com.project.stockproject.retrofit.SubRetrofitFactory.AWS_EC2_URL
+import com.project.stockproject.retrofit.SubRetrofitFactory.initializeRetrofit
 import com.project.stockproject.search.SearchAdapter
 import com.project.stockproject.search.SearchHistoryManager
 
@@ -66,10 +67,8 @@ class MainActivity : AppCompatActivity()  {
     }
     private fun getIPv4(){
         viewModel.getIpv4().observe(this, Observer {
-            Log.d("dsfadsfs","null")
             AWS_EC2_URL=it
-            Log.d("dsfadsfsasdfsdf",it)
-            Log.d("dsfadsfsasdfsdf", AWS_EC2_URL)
+            initializeRetrofit() //retrofit 초기화
         })
     }
 

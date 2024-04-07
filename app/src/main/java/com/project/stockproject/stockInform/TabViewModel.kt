@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.project.stockproject.retrofit.RetrofitFactory
 import com.project.stockproject.retrofit.RetrofitService
+import com.project.stockproject.retrofit.SubRetrofitFactory
 import com.project.stockproject.stockInform.chart.CurrentAdditional
 import com.project.stockproject.stockInform.chart.CurrentChart
 import com.project.stockproject.stockInform.chart.GetCurrentChart
@@ -23,7 +24,7 @@ import retrofit2.Response
 class TabViewModel : ViewModel() {
     private val newsRetrofit: RetrofitService = RetrofitFactory.newsRetrofit.create(RetrofitService::class.java)
     private val kisRetrofit: RetrofitService = RetrofitFactory.stockChartRetrofit.create(RetrofitService::class.java)
-    private val awsEC2Retrofit: RetrofitService = RetrofitFactory.awsEC2Retrofit.create(RetrofitService::class.java)
+
     /////현재 차트 불러오기
 
     fun getCurrentChart(stockCode:String,startDate:String,endDate:String):MutableLiveData<MutableList<CurrentChart>>{
@@ -85,7 +86,9 @@ class TabViewModel : ViewModel() {
     private  var getPredicCall: Call<PredictionData> ?= null
      fun getPredicChart(stockCode: String,marketCode:String):MutableLiveData<PredictionData>{
          val liveData: MutableLiveData<PredictionData> = MutableLiveData()
-         val a = RetrofitFactory.AWS_EC2_URL
+
+          val awsEC2Retrofit: RetrofitService = SubRetrofitFactory.
+          initializeRetrofit().create(RetrofitService::class.java)
          getPredicCall = awsEC2Retrofit.getStockInfo(stockCode,marketCode)
         getPredicCall?.enqueue(object : Callback<PredictionData>{
             override fun onResponse(

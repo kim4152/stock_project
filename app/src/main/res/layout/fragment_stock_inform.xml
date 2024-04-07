@@ -138,9 +138,9 @@
                 <TextView
                     android:id="@+id/circleText1"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="@id/circle1"
-                    app:layout_constraintBottom_toBottomOf="@id/circle1"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/circle1"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:text="@string/mse"

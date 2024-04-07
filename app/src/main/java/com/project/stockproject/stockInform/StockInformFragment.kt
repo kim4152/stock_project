@@ -94,9 +94,14 @@ class StockInformFragment : Fragment() {
         } catch (e: Exception) {
             setBackpress("") //뒤로가기 제어
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-            Log.d("dfasdf","2222")
-            getStockName = searchManager.getSearchHistory().first().stockName
-            getStockCode = searchManager.getSearchHistory().first().stockCode
+            if (searchManager.getSearchHistory().isEmpty()){
+                getStockName="삼성전자"
+                getStockCode="005930"
+            }else{
+                getStockName = searchManager.getSearchHistory().first().stockName
+                getStockCode = searchManager.getSearchHistory().first().stockCode
+            }
+
             binding.searchBar.text = getStockName
             getStockInform("search")
         }
@@ -113,8 +118,10 @@ class StockInformFragment : Fragment() {
                 stockList.add(StockList(it.stockCode, it.stockName))
             }
             //검색이 아니라 멀티 팩터에서 왔을때
-            if (getStockCode!=stockList[0].stockCode){
+            if (stockList.size!=0 && getStockCode!=stockList[0].stockCode){
                 stockList.add(0, StockList(getStockCode,getStockName))
+            }else if (stockList.size==0){
+                stockList.add(StockList(getStockCode,getStockName))
             }
             sendViewModelData()
         } else {

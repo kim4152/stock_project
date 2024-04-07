@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="@id/stockName"
         app:layout_constraintBottom_toBottomOf="@id/stockName"
         tools:text="1"
-        android:textSize="18sp"/>
+        android:textSize="18dp"/>
 
     <TextView
         android:id="@+id/stockName"
@@ -25,7 +25,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/number"
         app:flow_horizontalBias="0"
-        android:textSize="18sp"
+        android:textSize="18dp"
         tools:text="삼화제약"/>
 
 
@@ -38,7 +38,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/rate"
         tools:text="365,000"
-        android:textSize="16sp"
+        android:textSize="16dp"
         app:layout_constraintHorizontal_bias="0.65"/>
     <TextView
         android:id="@+id/vol"
@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="@id/price"
         app:layout_constraintTop_toBottomOf="@id/price"
         tools:text="114,432"
-        android:textSize="12sp"
+        android:textSize="12dp"
         />
     <ImageView
         android:id="@+id/arrow"
@@ -68,7 +68,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/rate"
         tools:text="1300"
-        android:textSize="16sp"
+        android:textSize="16dp"
         />
     <TextView
         android:id="@+id/rate"
@@ -78,7 +78,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/differ"
         tools:text="1.35%"
-        android:textSize="12sp"
+        android:textSize="12dp"
         />
 
 

@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitFactory {
     private const val KIS_BASE_URL="https://openapi.koreainvestment.com:9443/"
     private const val AWS_API_URL="https://xd3airbh73.execute-api.ap-northeast-2.amazonaws.com/"
-    var AWS_EC2_URL="http://3.36.111.251:5000/"
+
 
     var TOKEN  =""
     private const val  APP_KEY ="PSUzp1CHZpjgiCVInHoU5vXrc1gMvQ34FbRw"
@@ -53,11 +53,7 @@ object RetrofitFactory {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    //ai 예상 이동편균선 그리기
-    val awsEC2Retrofit = Retrofit.Builder()
-        .baseUrl(AWS_EC2_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+
 
 
     //open ai

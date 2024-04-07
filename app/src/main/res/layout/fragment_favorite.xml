@@ -52,7 +52,8 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="그룹편집"
+                        android:text="편집"
+                        android:textSize="20dp"
                         app:layout_constraintTop_toBottomOf="@id/editImage"
                         android:singleLine="true"
                         android:gravity="center"

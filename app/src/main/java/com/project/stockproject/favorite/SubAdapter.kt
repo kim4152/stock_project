@@ -1,6 +1,5 @@
 package com.project.stockproject.favorite
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -11,6 +10,7 @@ import com.project.stockproject.R
 import com.project.stockproject.common.MyApplication
 import com.project.stockproject.databinding.SubadapterItemBinding
 import java.text.DecimalFormat
+import kotlin.math.abs
 
 
 class SubAdapter(
@@ -56,7 +56,7 @@ class SubAdapter(
                    viewModel.getPredicEach(stockCode).observe(context, Observer {
                        if (it!=null){
                            //가격차이
-                           val prdy_vrss = it.stock_predic_price/(it.stock_predic_rate+1)
+                           val prdy_vrss = makeDiffer(it.stock_predic_price,it.stock_predic_rate)
                            price.text = df.format(it.stock_predic_price.toInt()) //현재가
                            vol.text = "" //거래량
 
@@ -132,6 +132,14 @@ class SubAdapter(
                     }
                 })
             }
+        }
+    }
+    private fun makeDiffer(stockPredicPrice: Double, stockPredicRate: Double):Int{
+        val rate = stockPredicRate/100
+        if (stockPredicRate.toFloat() ==0f){
+            return 0
+        }else{
+            return abs((stockPredicPrice/(1+rate) - stockPredicPrice).toInt())
         }
     }
 

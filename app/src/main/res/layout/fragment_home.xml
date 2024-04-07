@@ -64,7 +64,7 @@
                         android:id="@+id/mfCons"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="25dp"
+                        android:layout_marginTop="30dp"
                         app:layout_constraintTop_toBottomOf="@id/majorIndicators">
 
                         <TextView
@@ -122,17 +122,17 @@
                         android:layout_marginLeft="17dp"
                         android:text="예측가 랭킹"
                         android:textSize="18sp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="30dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/mfIndicators" />
                     <ImageView
-                        android:id="@+id/rankingHelp"
+                        android:id="@+id/rankingInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="@id/rankingText"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/baseline_help_24"/>
+                        android:src="@drawable/baseline_info_24"/>
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_marginTop="5dp"
                         app:layout_constraintTop_toBottomOf="@id/rankingText"

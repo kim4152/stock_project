@@ -1,6 +1,7 @@
 package com.project.stockproject.favorite
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -62,7 +63,7 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun handleMenu(item: MenuItem){
-        val pos = item.itemId+(popupMenu.menu.size())*10
+        val pos = item.itemId
         binding.viewPager.setCurrentItem(pos,true)
     }
 
