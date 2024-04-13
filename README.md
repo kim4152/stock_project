@@ -21,8 +21,8 @@
  - 서버 호스팅: AWS (Amazon Web Services)
 
 ## 📌 주요 기능
-#### 멀티 팩터 포토폴리오 - <a href="https://github.com/chaehyuenwoo/SpringBoot-Project-MEGABOX/wiki/%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EC%86%8C%EA%B0%9C(Login)" >상세보기 - WIKI 이동</a>
+#### 멀티 팩터 포토폴리오 - <a href="https://drive.google.com/file/d/1xDctqs_uWlCVCVXfarD7WFGu3CpaJcEG/view?usp=sharing" >이미지 보기</a>
 - 주식의 퀄리티, 벨류, 모멘텀을 종합한 상위 20개의 종목을 선정함
-#### 주식 검색 및 주가 예측 - <a href="https://github.com/chaehyuenwoo/SpringBoot-Project-MEGABOX/wiki/%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EC%86%8C%EA%B0%9C(Member)" >상세보기 - WIKI 이동</a>
+#### 주식 검색 및 주가 예측 - <a href="https://drive.google.com/file/d/1RI-xMDDqe6WeNbsMs600nVirb6kOLWsI/view?usp=sharing" >이미지 보기 </a>
 - 실제 주가 : 한국투자증권 open API 연동
 - 예측 주가 : 과거 주가를 기반한 AI 주가 예측
