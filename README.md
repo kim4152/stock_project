@@ -23,5 +23,6 @@
 #### 멀티 팩터 포토폴리오 - <a href="https://drive.google.com/file/d/1xDctqs_uWlCVCVXfarD7WFGu3CpaJcEG/view?usp=sharing" >이미지 보기</a>
 - 주식의 퀄리티, 벨류, 모멘텀을 종합한 상위 20개의 종목을 선정함
 #### 주식 검색 및 주가 예측 - <a href="https://drive.google.com/file/d/1RI-xMDDqe6WeNbsMs600nVirb6kOLWsI/view?usp=sharing" >이미지 보기 </a>
+- AWS 서버를 닫아놔서 기능이 제한됨
 - 실제 주가 : 한국투자증권 open API 연동
 - 예측 주가 : 과거 주가를 기반한 AI 주가 예측
