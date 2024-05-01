@@ -2,8 +2,7 @@
 
 
 ## 🖥️ 프로젝트 소개
- - 주가 예측 앱입니다.
-과거의 데이터 및 AI 기술을 기반으로 예측할 수 없는 미래에 도전합니다.
+ - 한국투자증권 OPEN API와 AI를 활용한 주가 예측 앱입니다.
  - <a href="https://play.google.com/store/apps/details?id=com.project.stockproject" >구글 플레이스토어 이동</a>
 <br>
 
